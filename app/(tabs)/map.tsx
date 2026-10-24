@@ -23,7 +23,7 @@ export default function MapTab() {
   if (!region.sites.length) {
     return (
       <SafeAreaView style={[styles.wrap, { backgroundColor: t.bg }]}>
-        <Text style={[styles.h1, { color: t.ink }]}>{region.programme}</Text>
+        <Text style={[styles.h1, { color: t.ink }]} accessibilityRole="header">{region.programme}</Text>
         <Card><Text style={{ color: t.ink }}>{region.summary}</Text><Text style={{ color: t.muted }}>{region.access}</Text></Card>
         <Button title="Official info" kind="secondary" onPress={() => Linking.openURL(region.source)} />
       </SafeAreaView>
@@ -43,7 +43,7 @@ export default function MapTab() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }}>
-      <MapView style={{ flex: 1 }} initialRegion={{ latitude: lat, longitude: lng, latitudeDelta: 0.15, longitudeDelta: 0.15 }} onLongPress={onLongPress} showsUserLocation>
+      <MapView style={{ flex: 1 }} initialRegion={{ latitude: lat, longitude: lng, latitudeDelta: 0.15, longitudeDelta: 0.15 }} onLongPress={onLongPress} showsUserLocation accessibilityLabel={`Map of ${region.programme} drop-off sites in ${region.name}. Long-press to suggest a new bin.`}>
         {region.sites.map((s) => (
           <Marker key={s.id} coordinate={{ latitude: s.lat, longitude: s.lng }} title={s.label} description={s.area} pinColor={sel?.id === s.id ? t.no : t.forest} onPress={() => setSel(s)} />
         ))}

@@ -87,7 +87,7 @@ export default function Community() {
         keyExtractor={(p) => p.id}
         ListHeaderComponent={
           <View style={{ gap: 12 }}>
-            <Text style={[styles.h1, { color: t.ink }]}>Community</Text>
+            <Text style={[styles.h1, { color: t.ink }]} accessibilityRole="header">Community</Text>
             <Card>
               <View style={styles.chips}>{KINDS.map((k) => (
                 <Pressable key={k} onPress={() => setKind(k)} style={[styles.chip, { backgroundColor: k === kind ? t.ink : t.soft }]}><Text style={{ color: k === kind ? t.bg : t.ink, fontWeight: '700' }}>{k}</Text></Pressable>
