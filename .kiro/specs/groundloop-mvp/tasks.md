@@ -33,7 +33,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
 
 - [x] 6. Mascots
   - [x] 6.1 `components/Mascot.tsx` – Peel with 5 ripeness states, Bram, Cora – _Req 2, 6_
-  - [ ] 6.2 Greeting overlay with rotation stored in AsyncStorage and reduced-motion support – _Req 2.1–2.4_
+  - [x] 6.2 Greeting overlay with rotation stored in AsyncStorage and reduced-motion support – _Req 2.1–2.4_
 
 - [ ] 7. Home screen (`app/(tabs)/index.tsx`) – started
   - [x] 7.1 Greeting, streak card with `WeekStrip`, Peel, log button – _Req 5.6, 6.1_
