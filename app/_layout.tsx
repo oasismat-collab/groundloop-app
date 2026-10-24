@@ -24,7 +24,8 @@ export default function RootLayout() {
     if (user && onSignIn) router.replace('/');
   }, [user, ready, segments]);
 
-  // New session: rotate Peel → Bram → Cora, greet by first name, create the profile on first sign-in.
+  // New session: rotate Peel → Bram → Cora, greet by first name, create the profile
+  // on first sign-in and ask for the home city (Req 1.5).
   useEffect(() => {
     if (!user || greetedFor.current === user.uid) return;
     greetedFor.current = user.uid;
@@ -34,10 +35,17 @@ export default function RootLayout() {
       await AsyncStorage.setItem('mascotIndex', String(next));
       setMascot(MASCOT_ORDER[next]!);
       setGreeting(true);
-      const { created } = await ensureProfile(user.uid, user.displayName ?? '');
-      if (created) router.push('/region?first=1');
       const reduce = await AccessibilityInfo.isReduceMotionEnabled();
       setTimeout(() => setGreeting(false), reduce ? 1500 : 2000);
+      // Create the profile with neutral defaults; send first-time users to the
+      // required city picker so their home city is set before they reach the app.
+      try {
+        const { needsHomeRegion } = await ensureProfile(user.uid, user.displayName ?? '');
+        if (needsHomeRegion) router.push('/region?first=1');
+      } catch {
+        // Offline/first write failed: leave the user signed in; they can pick a
+        // city later from the You tab once the write succeeds.
+      }
     })();
   }, [user]);
 

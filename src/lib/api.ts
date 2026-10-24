@@ -5,8 +5,10 @@ import { coarse } from './geo';
 
 export interface Profile {
   displayName: string;
-  homeRegion: string;
-  currentRegion: string;
+  /** Unset until the user picks their home city on first sign-in. */
+  homeRegion?: string;
+  /** Unset until the user picks their home city on first sign-in. */
+  currentRegion?: string;
   travel: boolean;
   usualSite?: { region: string; siteId: string };
   tz?: string;
@@ -22,19 +24,26 @@ export interface Profile {
 
 export type ProofLevel = 'self' | 'photo' | 'verified' | 'partner';
 
-export async function ensureProfile(uid: string, displayName: string): Promise<{ created: boolean }> {
+/**
+ * Creates `users/{uid}` on first sign-in with neutral defaults (Req 1.5).
+ * The home city is deliberately left unset here — the user is asked for it in
+ * the city picker — so we never silently assign a city they don't live in.
+ * Returns whether the doc was just created and whether a home city is still needed.
+ */
+export async function ensureProfile(uid: string, displayName: string): Promise<{ created: boolean; needsHomeRegion: boolean }> {
   const r = doc(db, 'users', uid);
   const snap = await getDoc(r);
-  if (snap.exists()) return { created: false };
+  if (snap.exists()) {
+    const data = snap.data() as Partial<Profile>;
+    return { created: false, needsHomeRegion: !data.homeRegion };
+  }
   await setDoc(r, {
     displayName,
-    homeRegion: 'boston',
-    currentRegion: 'boston',
     travel: false,
     tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
     createdAt: serverTimestamp(),
   });
-  return { created: true };
+  return { created: true, needsHomeRegion: true };
 }
 
 export function watchProfile(uid: string, cb: (p: Profile | null) => void): Unsubscribe {

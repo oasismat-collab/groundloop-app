@@ -15,8 +15,9 @@ const LOG_LABEL = { drop: 'I dropped off food scraps', curb: 'I put my food wast
 export default function Home() {
   const t = useTheme();
   const { user, profile } = useProfile();
-  if (!profile) return <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }} />;
-  const region = REGIONS[profile.currentRegion] ?? REGIONS.boston!;
+  // Wait for the profile, and for a city to be chosen on first sign-in (Req 1.5).
+  const region = profile?.currentRegion ? REGIONS[profile.currentRegion] : undefined;
+  if (!profile || !region) return <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }} />;
   const st = streakInfo(profile.weeks ?? [], profile.paused ?? []);
   const ripe = ripeness(profile.lastDropAt ?? null);
   const first = (profile.displayName || user?.displayName || '').split(' ')[0] || 'there';
