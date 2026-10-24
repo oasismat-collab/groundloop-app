@@ -12,6 +12,8 @@
 
 export type Element = 'N' | 'P' | 'K' | 'Ca' | 'Mg' | 'S' | 'Fe' | 'Zn';
 
+export const USDA_REPORT = 'https://www.ars.usda.gov/ARSUserFiles/80400535/Data/SR/SR28/reports/sr28fg09.pdf';
+
 export type Value = {
   value: number | null;
   unit: 'g/100g' | 'mg/100g';
@@ -2029,3 +2031,9 @@ export function searchAll(query: string): Array<Material | CompositeFood> {
 export function getMaterialsByCategory(category: keyof typeof categories): Material[] {
   return materials.filter(m => m.category === category);
 }
+
+/**
+ * Portion Evidence Statement
+ * Documents the source and methodology for default portion sizes
+ */
+export const portionEvidence = 'portion-v2-expanded: Typical serving sizes are based on USDA standard reference portions and common household measures. Individual portions vary; all values are editable. Database includes 60 foods with nutritional data from USDA FoodData Central SR Legacy.';
