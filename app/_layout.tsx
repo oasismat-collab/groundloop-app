@@ -1,20 +1,30 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Stack, router, useSegments } from 'expo-router';
-import { AccessibilityInfo, Pressable, Text, View, StyleSheet } from 'react-native';
+import { AccessibilityInfo } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../src/hooks/useAuth';
 import { ensureProfile } from '../src/lib/api';
-import { Mascot, MASCOT_ORDER, MASCOT_NAMES, type MascotId } from '../src/components/Mascot';
+import { GreetingOverlay } from '../src/components/GreetingOverlay';
+import { MASCOT_ORDER, type MascotId } from '../src/components/Mascot';
+import { SessionMascotContext, nextSessionMascot } from '../src/hooks/useSessionMascot';
 import { useTheme } from '../src/theme';
 
 export default function RootLayout() {
   const { user, ready } = useAuth();
   const segments = useSegments();
   const t = useTheme();
-  const [mascot, setMascot] = useState<MascotId>('peel');
+  const [mascot, setMascot] = useState<MascotId>(MASCOT_ORDER[0]!);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const [greeting, setGreeting] = useState(false);
   const greetedFor = useRef<string | null>(null);
+
+  // Keep the reduced-motion flag live so the greeting and any future motion honour it (Req 2.4).
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
+    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => sub.remove();
+  }, []);
 
   // Gate: signed-out users go to sign-in, signed-in users leave it.
   useEffect(() => {
@@ -30,13 +40,8 @@ export default function RootLayout() {
     if (!user || greetedFor.current === user.uid) return;
     greetedFor.current = user.uid;
     (async () => {
-      const last = Number((await AsyncStorage.getItem('mascotIndex')) ?? '-1');
-      const next = (last + 1) % MASCOT_ORDER.length;
-      await AsyncStorage.setItem('mascotIndex', String(next));
-      setMascot(MASCOT_ORDER[next]!);
+      setMascot(await nextSessionMascot(AsyncStorage));
       setGreeting(true);
-      const reduce = await AccessibilityInfo.isReduceMotionEnabled();
-      setTimeout(() => setGreeting(false), reduce ? 1500 : 2000);
       // Create the profile with neutral defaults; send first-time users to the
       // required city picker so their home city is set before they reach the app.
       try {
@@ -52,26 +57,19 @@ export default function RootLayout() {
   const first = (user?.displayName ?? '').split(' ')[0] || 'there';
 
   return (
-    <>
+    <SessionMascotContext.Provider value={{ mascot, reduceMotion }}>
       <StatusBar style="auto" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: t.bg } }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="sign-in" />
         <Stack.Screen name="log" options={{ presentation: 'modal' }} />
         <Stack.Screen name="region" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="recap" options={{ presentation: 'modal' }} />
         <Stack.Screen name="host" options={{ presentation: 'modal' }} />
       </Stack>
       {greeting && (
-        <Pressable style={[StyleSheet.absoluteFill, styles.splash, { backgroundColor: t.bg }]} onPress={() => setGreeting(false)} accessibilityRole="button" accessibilityLabel="Dismiss greeting">
-          <Mascot id={mascot} size={150} />
-          <Text style={[styles.hi, { color: t.ink }]}>Hi, {first}!</Text>
-          <View><Text style={{ color: t.muted, fontWeight: '600' }}>{MASCOT_NAMES[mascot]} says welcome back.</Text></View>
-        </Pressable>
+        <GreetingOverlay mascot={mascot} firstName={first} reduceMotion={reduceMotion} onDismiss={() => setGreeting(false)} />
       )}
-    </>
+    </SessionMascotContext.Provider>
   );
 }
-const styles = StyleSheet.create({
-  splash: { alignItems: 'center', justifyContent: 'center', gap: 8 },
-  hi: { fontSize: 36, fontWeight: '800', letterSpacing: -1 },
-});
