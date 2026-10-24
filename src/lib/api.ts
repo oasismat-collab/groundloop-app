@@ -1,5 +1,5 @@
-import { doc, getDoc, setDoc, updateDoc, addDoc, collection, onSnapshot, query, orderBy, limit, where, serverTimestamp, type Unsubscribe } from 'firebase/firestore';
-import { ref, uploadBytes } from 'firebase/storage';
+import { doc, getDoc, getDocs, setDoc, updateDoc, addDoc, collection, onSnapshot, query, orderBy, limit, where, serverTimestamp, type Unsubscribe } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './firebase';
 import { coarse } from './geo';
 
@@ -98,7 +98,58 @@ export function watchFeed(region: string | null, cb: (posts: Array<Record<string
 export const createPost = (uid: string, kind: string, text: string, region: string, photoPath?: string) =>
   addDoc(collection(db, 'posts'), { uid, kind, text: text.slice(0, 280), region, createdAt: Date.now(), ...(photoPath ? { photoPath } : {}) });
 
+/**
+ * The storage path of the user's most recent proof photo, if any — so a post
+ * can optionally attach it (Req 7.1). Returns null when the user has no photo
+ * drop-off yet.
+ */
+export async function latestProofPhotoPath(uid: string): Promise<string | null> {
+  const q = query(collection(db, 'users', uid, 'dropoffs'), orderBy('createdAt', 'desc'), limit(20));
+  const snap = await getDocs(q);
+  for (const d of snap.docs) {
+    const path = (d.data() as { photoPath?: string }).photoPath;
+    if (path) return path;
+  }
+  return null;
+}
+
+/** A download URL for a stored proof photo (cached by Storage). */
+export const proofPhotoUrl = (photoPath: string) => getDownloadURL(ref(storage, photoPath));
+
+/**
+ * Reports a post (Req 7.6): adds it to the moderation queue. The caller also
+ * hides it locally for this user — reporting and hiding go together.
+ */
+export const reportPost = (uid: string, postId: string, reason: string) =>
+  addDoc(collection(db, 'reports'), { uid, postId, reason, createdAt: Date.now() });
+
 export const cheer = (postId: string, uid: string) => setDoc(doc(db, 'posts', postId, 'cheers', uid), { createdAt: Date.now() });
+
+/** Public member summary, written by Cloud Functions only (see design: members/{uid}). */
+export interface Member {
+  id: string;
+  displayName: string;
+  photoURL?: string | null;
+  region?: string | null;
+  streak: number;
+  best?: number;
+  proofCounts?: { self: number; photo: number; verified: number };
+  /** Share of drop-offs carrying photo proof, 0–100 (never a waste quantity, Req 7.4). */
+  proofShare: number;
+}
+
+/**
+ * The "Most consistent" board (Req 7.4): members ranked by current streak, then
+ * by share of drop-offs with photo proof. Deliberately never ordered by any
+ * measure of waste quantity. `region` filters to a single city's board.
+ */
+export function watchBoard(region: string | null, cb: (members: Member[]) => void): Unsubscribe {
+  const base = collection(db, 'members');
+  const q = region
+    ? query(base, where('region', '==', region), orderBy('streak', 'desc'), orderBy('proofShare', 'desc'), limit(50))
+    : query(base, orderBy('streak', 'desc'), orderBy('proofShare', 'desc'), limit(50));
+  return onSnapshot(q, (s) => cb(s.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Member, 'id'>) }))));
+}
 
 export const suggestSite = (uid: string, region: string, lat: number, lng: number, note = '') =>
   addDoc(collection(db, 'siteRequests'), { uid, region, lat: coarse(lat), lng: coarse(lng), note: note.slice(0, 120), createdAt: Date.now() });
