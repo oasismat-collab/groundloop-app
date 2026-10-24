@@ -17,7 +17,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
   - [x] 3.1 `src/lib/firebase.ts` with React Native auth persistence – _Req 1.6_
   - [x] 3.2 `src/lib/auth.ts` – Google and Apple sign-in, sign-out – _Req 1.2, 1.3, 1.7_
   - [x] 3.3 `app/_layout.tsx` auth gate and `app/sign-in.tsx` – _Req 1.1, 1.4_
-  - [ ] 3.4 Create `users/{uid}` on first sign-in and route to the city picker – _Req 1.5_
+  - [x] 3.4 Create `users/{uid}` on first sign-in and route to the city picker – _Req 1.5_
 
 - [x] 4. Security rules
   - [x] 4.1 `firestore.rules` and `storage.rules` – _Req 4.8, 7.3_

@@ -27,8 +27,8 @@ export default function You() {
         <Text style={{ color: t.muted }}>{user.email}</Text>
         <Card>
           <Eyebrow>Where you compost</Eyebrow>
-          <Text style={{ color: t.ink }} onPress={() => router.push('/region?first=1')}>Home: {REGIONS[profile.homeRegion]?.name} ›</Text>
-          <Text style={{ color: t.ink }} onPress={() => router.push('/region')}>Right now: {REGIONS[profile.currentRegion]?.name} ›</Text>
+          <Text style={{ color: t.ink }} onPress={() => router.push('/region?first=1')}>Home: {(profile.homeRegion && REGIONS[profile.homeRegion]?.name) || 'Choose your city'} ›</Text>
+          <Text style={{ color: t.ink }} onPress={() => router.push('/region')}>Right now: {(profile.currentRegion && REGIONS[profile.currentRegion]?.name) || 'Choose your city'} ›</Text>
           <View style={styles.between}>
             <View style={{ flex: 1 }}>
               <Text style={{ color: t.ink, fontWeight: '700' }}>Travel mode</Text>
