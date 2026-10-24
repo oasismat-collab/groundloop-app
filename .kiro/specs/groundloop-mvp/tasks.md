@@ -21,7 +21,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
 
 - [x] 4. Security rules
   - [x] 4.1 `firestore.rules` and `storage.rules` – _Req 4.8, 7.3_
-  - [ ] 4.2 Rules unit tests with `@firebase/rules-unit-testing` – _Req 4.8_
+  - [x] 4.2 Rules unit tests with `@firebase/rules-unit-testing` – _Req 4.8_
 
 - [x] 5. Cloud Functions
   - [x] 5.1 `verifyDropoff` (photo freshness, perceptual hash, geofence, seeds, weeks, member summary) – _Req 4.4–4.7, 5.1, 5.4_
