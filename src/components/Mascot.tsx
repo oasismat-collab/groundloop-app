@@ -1,5 +1,6 @@
 /* Mascots drawn as SVG strings and rendered with SvgXml. Ported from the web prototype. */
 import React from 'react';
+import { Animated } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import type { Ripeness } from '../lib/streak';
 
@@ -96,6 +97,28 @@ export const MASCOT_NAMES: Record<MascotId, string> = { peel: 'Peel', bram: 'Bra
 export function Peel({ ripeness = 'fresh', width = 180 }: { ripeness?: Ripeness; width?: number }) {
   const r = RIPENESS[RIPE_INDEX[ripeness]]!;
   return <SvgXml xml={bananaXml(r, width)} width={width} height={Math.round((width * 140) / 220)} accessibilityLabel={'Peel the banana is ' + r.name.toLowerCase()} />;
+}
+
+/**
+ * Peel with a short revive pop, shown right after a drop-off when Peel becomes
+ * Fresh (Req 6.2). Honours reduced motion: when `reduceMotion` is true it renders
+ * fresh Peel with no animation.
+ */
+export function RevivingPeel({ width = 180, reduceMotion = false }: { width?: number; reduceMotion?: boolean }) {
+  const scale = React.useRef(new Animated.Value(reduceMotion ? 1 : 0.6)).current;
+  const opacity = React.useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
+  React.useEffect(() => {
+    if (reduceMotion) return;
+    Animated.parallel([
+      Animated.spring(scale, { toValue: 1, friction: 5, tension: 90, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 1, duration: 280, useNativeDriver: true }),
+    ]).start();
+  }, [reduceMotion, scale, opacity]);
+  return (
+    <Animated.View style={{ opacity, transform: [{ scale }] }}>
+      <Peel ripeness="fresh" width={width} />
+    </Animated.View>
+  );
 }
 
 export function Mascot({ id, size = 120 }: { id: MascotId; size?: number }) {
