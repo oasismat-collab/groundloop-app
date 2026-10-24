@@ -100,6 +100,32 @@ export const createPost = (uid: string, kind: string, text: string, region: stri
 
 export const cheer = (postId: string, uid: string) => setDoc(doc(db, 'posts', postId, 'cheers', uid), { createdAt: Date.now() });
 
+/** Public member summary, written by Cloud Functions only (see design: members/{uid}). */
+export interface Member {
+  id: string;
+  displayName: string;
+  photoURL?: string | null;
+  region?: string | null;
+  streak: number;
+  best?: number;
+  proofCounts?: { self: number; photo: number; verified: number };
+  /** Share of drop-offs carrying photo proof, 0–100 (never a waste quantity, Req 7.4). */
+  proofShare: number;
+}
+
+/**
+ * The "Most consistent" board (Req 7.4): members ranked by current streak, then
+ * by share of drop-offs with photo proof. Deliberately never ordered by any
+ * measure of waste quantity. `region` filters to a single city's board.
+ */
+export function watchBoard(region: string | null, cb: (members: Member[]) => void): Unsubscribe {
+  const base = collection(db, 'members');
+  const q = region
+    ? query(base, where('region', '==', region), orderBy('streak', 'desc'), orderBy('proofShare', 'desc'), limit(50))
+    : query(base, orderBy('streak', 'desc'), orderBy('proofShare', 'desc'), limit(50));
+  return onSnapshot(q, (s) => cb(s.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Member, 'id'>) }))));
+}
+
 export const suggestSite = (uid: string, region: string, lat: number, lng: number, note = '') =>
   addDoc(collection(db, 'siteRequests'), { uid, region, lat: coarse(lat), lng: coarse(lng), note: note.slice(0, 120), createdAt: Date.now() });
 
