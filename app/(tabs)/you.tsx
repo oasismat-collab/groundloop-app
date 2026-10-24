@@ -43,6 +43,12 @@ export default function You() {
           <WeekStrip weeks={profile.weeks ?? []} paused={profile.paused ?? []} n={16} />
           <Text style={{ color: t.muted }}>{total ? Math.round(((pc.photo + pc.verified) / total) * 100) : 0}% of your drop-offs have photo proof.</Text>
         </Card>
+        {/* Host-a-bin (Req 8.2): a business can offer a space for a drop-off bin. */}
+        <Card>
+          <Eyebrow>Help coverage grow</Eyebrow>
+          <Text style={{ color: t.muted, fontSize: 13 }}>Run a café, shop or community space? Offer it as a spot for a food-scrap bin.</Text>
+          <Button title="Offer a space" kind="secondary" onPress={() => router.push('/host')} />
+        </Card>
         <Button title="Sign out" kind="secondary" onPress={() => signOut()} />
       </ScrollView>
     </SafeAreaView>
