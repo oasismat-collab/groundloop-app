@@ -528,5 +528,10 @@ function makeMap(id, lat, lng, zoom) {
 document.querySelectorAll('#viewSwitch button').forEach((b) =>
   b.onclick = () => { state.view = b.dataset.view; render(); });
 
+// Additive entry point: a link may open the demo straight on the partner
+// dashboard via the URL hash (e.g. prototype/#partner). No hash, or any other
+// hash, preserves the default resident-first behaviour.
+if (location.hash === '#partner') state.view = 'partner';
+
 setLocale(state.locale);
 render();

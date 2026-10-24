@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GroundLoop — follow your food scraps back to the soil</title>
+  <meta name="description" content="GroundLoop helps residents sort food scraps, find where to compost, and keep a weekly streak — free forever. Cities, haulers and companies get anonymized, aggregated insight into where new drop-off sites are needed." />
+  <style>
+    /* Tokens mirrored from docs/prototype/styles.css (src/theme.ts light palette). */
+    :root {
+      --bg: #F3F6F2; --card: #FFFFFF; --soft: #E8EDE7; --line: #DCE3DA;
+      --ink: #14201A; --muted: #5F6E66;
+      --forest: #1F5C3F; --forest2: #2F7A55; --forestSoft: #DDEBE2;
+      --banana: #F2C230; --bananaSoft: #FCF1CC;
+      --no: #C2412F; --noSoft: #F8E1DC; --share: #C86A12;
+      --sky: #2C6E9E; --skySoft: #DEEAF3; --onAccent: #FFFFFF;
+      --radius-card: 16px; --radius-pill: 999px;
+      --maxw: 1100px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      background: linear-gradient(160deg, #E6EFE7 0%, #F3F6F2 60%) fixed;
+      color: var(--ink); min-height: 100vh; line-height: 1.5;
+      overflow-x: hidden;
+    }
+    a { color: var(--forest); }
+
+    /* ── top bar (mirrors prototype .topbar) ── */
+    .topbar {
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 20px; background: var(--forest); color: var(--onAccent);
+      position: sticky; top: 0; z-index: 50; flex-wrap: wrap;
+    }
+    .topbar .brand { font-weight: 800; font-size: 18px; letter-spacing: .2px; display: flex; align-items: center; gap: 8px; }
+    .topbar .brand svg { display: block; }
+    .topbar .nav { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .topbar select {
+      background: rgba(255,255,255,.14); color: #fff; border: 0;
+      border-radius: var(--radius-pill); padding: 7px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .topbar select option { color: #14201A; }
+    .topbar .barlink {
+      background: var(--banana); color: #3a2f08; text-decoration: none; font-weight: 700; font-size: 14px;
+      padding: 8px 16px; border-radius: var(--radius-pill);
+    }
+
+    /* ── buttons (mirror prototype .btn) ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--forest); color: var(--onAccent); border: 0; border-radius: var(--radius-pill);
+      padding: 14px 22px; font-weight: 700; font-size: 16px; cursor: pointer; text-decoration: none;
+    }
+    .btn.secondary { background: var(--soft); color: var(--ink); }
+    .btn.sky { background: var(--sky); color: #fff; }
+    .btn:focus-visible { outline: 3px solid var(--banana); outline-offset: 2px; }
+
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 20px; }
+    .pill { display: inline-block; padding: 4px 10px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; }
+    .pill.in { background: var(--forestSoft); color: var(--forest); }
+    .muted { color: var(--muted); }
+
+    /* ── layout ── */
+    main { display: block; }
+    section { padding: 64px 20px; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; }
+    section h2 { font-size: 28px; margin: 0 0 8px; }
+    section .lead { color: var(--muted); font-size: 17px; margin: 0 0 28px; max-width: 60ch; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 12px; font-weight: 800; color: var(--forest2); margin: 0 0 8px; }
+
+    /* ── hero ── */
+    .hero { padding-top: 56px; }
+    .hero .grid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; }
+    .hero h1 { font-size: 40px; line-height: 1.1; margin: 0 0 16px; letter-spacing: -.01em; }
+    .hero p.sub { font-size: 19px; color: var(--muted); margin: 0 0 26px; max-width: 52ch; }
+    .hero .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero .trust { margin-top: 18px; font-size: 13px; }
+
+    /* phone mockup (mirrors prototype .phone recipe, scaled) */
+    .phonewrap { display: flex; justify-content: center; }
+    .phone {
+      width: 300px; max-width: 100%; background: var(--bg);
+      border-radius: 34px; border: 10px solid #10211a;
+      box-shadow: 0 24px 60px rgba(16,33,26,.28); overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .phone .appbar { display: flex; align-items: center; gap: 8px; padding: 14px 16px 10px; background: var(--card); border-bottom: 1px solid var(--line); }
+    .phone .appbar .title { font-weight: 700; }
+    .phone .screen { padding: 14px; }
+    .phone .mini { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 14px; margin-bottom: 12px; text-align: center; }
+    .phone .mini h3 { margin: 0 0 6px; font-size: 14px; }
+    .phone .streak { font-size: 22px; font-weight: 800; color: var(--forest); margin: 0; }
+    .weekstrip { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+    .wk { width: 14px; height: 14px; border-radius: 4px; background: var(--soft); }
+    .wk.done { background: var(--forest2); }
+    .wk.current { outline: 2px solid var(--forest); outline-offset: 1px; }
+    .phone .fakebtn { background: var(--forest); color: #fff; border-radius: var(--radius-pill); text-align: center; padding: 11px; font-weight: 700; font-size: 14px; }
+
+    /* ── problem / steps / stats grids ── */
+    .grid3 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .grid4 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .feature { display: flex; gap: 14px; align-items: flex-start; }
+    .feature .ic { font-size: 26px; line-height: 1; flex: none; }
+    .feature h3 { margin: 0 0 4px; font-size: 16px; }
+    .feature p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .steps { display: grid; grid-template-columns: 1fr; gap: 14px; counter-reset: step; }
+    .step { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 16px; }
+    .step .n { counter-increment: step; width: 30px; height: 30px; flex: none; border-radius: 50%; background: var(--forest); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+    .step .n::before { content: counter(step); }
+    .step h3 { margin: 0 0 2px; font-size: 16px; }
+    .step p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .peelpanel { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: center; margin-top: 22px; }
+    .peelpanel .mascot-row { display: flex; gap: 6px; justify-content: center; align-items: flex-end; }
+
+    .stat { text-align: left; }
+    .stat b { display: block; font-size: 30px; color: var(--forest); line-height: 1.1; }
+    .stat span { color: var(--muted); font-size: 14px; }
+
+    /* ── partners section ── */
+    .partners { background: var(--forest); color: #fff; }
+    .partners h2, .partners .eyebrow { color: #fff; }
+    .partners .eyebrow { color: #CDE5D6; }
+    .partners .lead { color: #D6E6DC; }
+    .partners .pgrid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .partners .pcard { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: var(--radius-card); padding: 18px; }
+    .partners .pcard h3 { margin: 0 0 6px; font-size: 16px; }
+    .partners .pcard p { margin: 0; color: #D6E6DC; font-size: 14px; }
+    .bar { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 13px; }
+    .bar .lbl { width: 92px; color: #E7F2EB; }
+    .bar .track { flex: 1; height: 10px; background: rgba(255,255,255,.18); border-radius: 6px; overflow: hidden; }
+    .bar .fill { height: 100%; background: var(--banana); }
+    .partners .cta { margin-top: 24px; }
+
+    /* ── privacy promise ── */
+    .promise { list-style: none; padding: 0; margin: 0 0 22px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .promise li { display: flex; gap: 12px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 14px 16px; }
+    .promise .ic { color: var(--forest); font-weight: 800; flex: none; }
+
+    /* ── QR ── */
+    .qr { text-align: center; }
+    .qrbox { display: inline-flex; flex-direction: column; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 22px; }
+    .qrbox svg { width: 180px; height: 180px; display: block; }
+    .qrbox a { font-weight: 700; word-break: break-all; }
+
+    /* ── live demo (embedded, scroll target) ── */
+    .demo { background: var(--forestSoft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .demo .wrap { text-align: center; }
+    .demo .lead { margin-left: auto; margin-right: auto; }
+    .demoframe {
+      position: relative; margin: 8px auto 0; max-width: 1180px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(16,33,26,.16); overflow: hidden; text-align: left;
+    }
+    .demoframe .bar {
+      display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+      background: var(--soft); border-bottom: 1px solid var(--line); color: var(--muted); font-size: 13px;
+    }
+    .demoframe .bar .dot { width: 11px; height: 11px; border-radius: 50%; background: #cdd6cd; }
+    .demoframe .bar .dot:nth-child(1) { background: #e0776b; }
+    .demoframe .bar .dot:nth-child(2) { background: #e6c15a; }
+    .demoframe .bar .dot:nth-child(3) { background: #7fb98f; }
+    .demoframe .bar .url { margin-left: 10px; }
+    .demoframe iframe { display: block; width: 100%; height: 900px; max-height: 86vh; border: 0; background: var(--bg); }
+    .demo .cta { justify-content: center; margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* ── footer ── */
+    footer { background: #10211a; color: #CDE5D6; padding: 40px 20px; }
+    footer .wrap { display: grid; gap: 14px; }
+    footer .brand { font-weight: 800; color: #fff; font-size: 18px; }
+    footer a { color: #BFE0CC; }
+    footer .team { font-size: 14px; }
+    footer .built { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.08); border-radius: var(--radius-pill); padding: 6px 14px; font-weight: 700; color: #fff; font-size: 13px; width: fit-content; }
+
+    /* ── responsive ── */
+    @media (min-width: 820px) {
+      section { padding: 80px 24px; }
+      .hero .grid { grid-template-columns: 1.1fr .9fr; }
+      .hero h1 { font-size: 52px; }
+      .grid3 { grid-template-columns: repeat(3, 1fr); }
+      .grid4 { grid-template-columns: repeat(4, 1fr); }
+      .steps { grid-template-columns: repeat(4, 1fr); }
+      .peelpanel { grid-template-columns: 220px 1fr; }
+      .partners .pgrid { grid-template-columns: repeat(3, 1fr); }
+      .promise { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span id="brandMark"></span><span>GroundLoop</span></div>
+    <div class="nav">
+      <select id="langSel" aria-label="Language"></select>
+      <a class="barlink" href="#demo" id="toDemoBar" data-i18n="nav.try">Try the app</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. Hero -->
+    <section class="hero">
+      <div class="wrap grid">
+        <div>
+          <p class="eyebrow" data-i18n="hero.eyebrow">Free forever for residents</p>
+          <h1 data-i18n="hero.title">Follow your food scraps back to the soil.</h1>
+          <p class="sub" data-i18n="hero.sub">Sort it, drop it, and keep a weekly streak that follows you anywhere. GroundLoop makes composting easy to join — and gives cities the anonymized picture they need to add drop-off sites where they help most.</p>
+          <div class="cta">
+            <a class="btn" href="#demo" id="toDemo" data-i18n="hero.cta.try">Try the app</a>
+            <a class="btn secondary" href="#partners" id="toPartners" data-i18n="hero.cta.partners">For cities &amp; companies</a>
+          </div>
+          <p class="trust muted" data-i18n="hero.trust">No login. No install. Runs right in your browser.</p>
+        </div>
+        <div class="phonewrap">
+          <div class="phone" aria-hidden="true">
+            <div class="appbar"><span id="phoneMark"></span><span class="title">GroundLoop</span></div>
+            <div class="screen">
+              <div class="mini">
+                <span id="phonePeel"></span>
+                <p class="muted" style="margin:6px 0 0;font-size:13px" data-i18n="phone.peel">Peel is fresh. Nice work this week!</p>
+              </div>
+              <div class="mini">
+                <h3 data-i18n="phone.streak">Weekly streak</h3>
+                <p class="streak">7</p>
+                <div class="weekstrip" id="phoneStrip"></div>
+              </div>
+              <div class="fakebtn" data-i18n="phone.log">📸 Log a drop-off</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1b. Live demo (embedded — scroll down from the hero and it's right here) -->
+    <section class="demo" id="demo">
+      <div class="wrap">
+        <p class="eyebrow" data-i18n="demo.eyebrow">See it for yourself</p>
+        <h2 data-i18n="demo.title">The live app — right here.</h2>
+        <p class="lead" data-i18n="demo.lead">No login, no install, no server. Use the resident app below, or switch to the partner dashboard — it's the real thing running in sample mode.</p>
+        <div class="demoframe">
+          <div class="bar" aria-hidden="true">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="url">groundloop · live demo (sample mode)</span>
+          </div>
+          <iframe id="demoFrame" src="prototype/" title="GroundLoop interactive browser demo" loading="lazy" allow="geolocation"></iframe>
+        </div>
+        <div class="cta">
+          <a class="btn" href="prototype/" target="_blank" rel="noopener" data-i18n="demo.full">Open full screen ↗</a>
+          <a class="btn secondary" href="prototype/#partner" target="_blank" rel="noopener" data-i18n="demo.partner">Open the partner dashboard ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. The problem -->
+    <section>
+      <div class="wrap">
+        <p class="eyebrow" data-i18n="problem.eyebrow">The problem</p>
+        <h2 data-i18n="problem.title">Good scraps keep ending up in the wrong place.</h2>
+        <p class="lead" data-i18n="problem.lead">Food is the heaviest thing most of us throw away — and it doesn't have to be waste at all.</p>
+        <div class="grid3">
+          <div class="card feature"><span class="ic">🗑️</span><div><h3 data-i18n="problem.p1.t">Scraps go to landfill</h3><p data-i18n="problem.p1.b">Buried food scraps rot without air and release methane, instead of becoming compost for local soil.</p></div></div>
+          <div class="card feature"><span class="ic">🤔</span><div><h3 data-i18n="problem.p2.t">No one's sure what's compostable</h3><p data-i18n="problem.p2.b">Rules change from city to city. People guess, give up, or contaminate the bin.</p></div></div>
+          <div class="card feature"><span class="ic">🗺️</span><div><h3 data-i18n="problem.p3.t">Cities can't see the gaps</h3><p data-i18n="problem.p3.b">Programme managers don't know which neighbourhoods want a drop-off site and have nowhere to go.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. How it works for residents -->
+    <section style="background:var(--card)">
+      <div class="wrap">
+        <p class="eyebrow" data-i18n="how.eyebrow">For residents</p>
+        <h2 data-i18n="how.title">How it works</h2>
+        <p class="lead" data-i18n="how.lead">Four small steps that fit into a normal week.</p>
+        <div class="steps">
+          <div class="step"><span class="n" aria-hidden="true"></span><div><h3 data-i18n="how.s1.t">Sort it</h3><p data-i18n="how.s1.b">Ask "can it go in?" and get a city-specific answer in a tap.</p></div></div>
+          <div class="step"><span class="n" aria-hidden="true"></span><div><h3 data-i18n="how.s2.t">Drop it</h3><p data-i18n="how.s2.b">Find a nearby drop-off site on the map and log your visit.</p></div></div>
+          <div class="step"><span class="n" aria-hidden="true"></span><div><h3 data-i18n="how.s3.t">Keep your streak</h3><p data-i18n="how.s3.b">Compost once a week to keep your streak — it travels with you to any city.</p></div></div>
+          <div class="step"><span class="n" aria-hidden="true"></span><div><h3 data-i18n="how.s4.t">See your recap</h3><p data-i18n="how.s4.b">Look back at your season: drop-offs, longest streak, where your scraps went.</p></div></div>
+        </div>
+        <div class="peelpanel">
+          <div class="mascot-row" id="peelStates" aria-hidden="true"></div>
+          <div>
+            <h3 style="margin:0 0 6px" data-i18n="how.peel.t">Meet Peel the banana.</h3>
+            <p class="muted" style="margin:0" data-i18n="how.peel.b">Peel the banana rots if you stop — getting spotty, then brown — and turns fresh again the moment you log a drop-off. A gentle mood, never a guilt trip.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Built for everyone -->
+    <section>
+      <div class="wrap">
+        <p class="eyebrow" data-i18n="every.eyebrow">Built for everyone</p>
+        <h2 data-i18n="every.title">Everyone belongs in the loop.</h2>
+        <p class="lead" data-i18n="every.lead">Composting only works when it works for everybody.</p>
+        <div class="grid4">
+          <div class="card stat"><b data-i18n="every.langs.n">6</b><span data-i18n="every.langs.l">languages at launch — English, Spanish, Portuguese, Haitian Creole, Chinese and Vietnamese</span></div>
+          <div class="card stat"><b data-i18n="every.cities.n">13 cities</b><span data-i18n="every.cities.l">across 5 countries, each with official local sorting rules</span></div>
+          <div class="card stat"><b data-i18n="every.free.n">Free</b><span data-i18n="every.free.l">forever for residents — every feature, no paywall</span></div>
+          <div class="card stat"><b data-i18n="every.access.n">A11y</b><span data-i18n="every.access.l">accessible design: clear contrast, labels, and reduced-motion support</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5/6. For cities, haulers & companies -->
+    <section class="partners" id="partners">
+      <div class="wrap">
+        <p class="eyebrow" data-i18n="partner.eyebrow">For cities, haulers &amp; companies</p>
+        <h2 data-i18n="partner.title">See where composting needs to grow.</h2>
+        <p class="lead" data-i18n="partner.lead">Residents stay free. Partners pay for insight, not people — aggregated, never personal.</p>
+        <div class="pgrid">
+          <div class="pcard"><h3 data-i18n="partner.c1.t">Neighbourhood-level insight</h3><p data-i18n="partner.c1.b">Anonymized, aggregated activity by area — never a name, photo, exact location or individual history.</p></div>
+          <div class="pcard"><h3 data-i18n="partner.c2.t">Where to add drop-off sites</h3><p data-i18n="partner.c2.b">Resident requests cluster into a ranked list of underserved areas, by distance to the nearest site.</p></div>
+          <div class="pcard">
+            <h3 data-i18n="partner.c3.t">Participation trends</h3>
+            <div class="bar"><span class="lbl" data-i18n="partner.bar.beacon">Beacon Hill</span><span class="track"><span class="fill" style="width:84%"></span></span></div>
+            <div class="bar"><span class="lbl" data-i18n="partner.bar.jp">Jamaica Plain</span><span class="track"><span class="fill" style="width:61%"></span></span></div>
+            <div class="bar"><span class="lbl" data-i18n="partner.bar.eastb">East Boston</span><span class="track"><span class="fill" style="width:39%"></span></span></div>
+          </div>
+        </div>
+        <div class="cta">
+          <a class="btn sky" href="prototype/#partner" data-i18n="partner.cta">See the partner dashboard</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Privacy promise -->
+    <section>
+      <div class="wrap">
+        <p class="eyebrow" data-i18n="priv.eyebrow">Privacy promise</p>
+        <h2 data-i18n="priv.title">Privacy is a promise, not a setting.</h2>
+        <p class="lead" data-i18n="priv.lead">The whole model depends on trust, so these rules bind every feature.</p>
+        <ul class="promise">
+          <li><span class="ic" aria-hidden="true">✓</span><span data-i18n="priv.p1">We never sell your personal data — not your name, photos, locations or history.</span></li>
+          <li><span class="ic" aria-hidden="true">✓</span><span data-i18n="priv.p2">Partners only ever see aggregates — totals and trends for an area, never you.</span></li>
+          <li><span class="ic" aria-hidden="true">✓</span><span data-i18n="priv.p3">Any area with fewer than 10 opted-in people is hidden, so no one can be singled out.</span></li>
+          <li><span class="ic" aria-hidden="true">✓</span><span data-i18n="priv.p4">Sharing is opt-in only and off by default. Opt out any time and you leave every aggregate.</span></li>
+        </ul>
+        <a class="btn secondary" href="privacy.html" data-i18n="priv.more">Read the full privacy promise</a>
+      </div>
+    </section>
+
+    <!-- 8. QR to the live app -->
+    <section style="background:var(--card)">
+      <div class="wrap qr">
+        <p class="eyebrow" data-i18n="qr.eyebrow">Get it on your phone</p>
+        <h2 data-i18n="qr.title">Scan to open the app.</h2>
+        <p class="lead" style="margin-left:auto;margin-right:auto" data-i18n="qr.lead">Point your phone's camera at the code — the demo opens in your browser, no install.</p>
+        <div class="qrbox">
+          <div id="qr" role="img" aria-label="QR code linking to the GroundLoop app"></div>
+          <a id="qrLink" href="#">app link</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 9. Footer -->
+  <footer>
+    <div class="wrap">
+      <div class="brand">GroundLoop</div>
+      <span class="built">✨ <span data-i18n="footer.kiro">Built with Kiro</span></span>
+      <div><a id="ghLink" href="https://github.com/oasismat-collab/groundloop-app" data-i18n="footer.github">GitHub repository</a></div>
+      <div class="team"><span data-i18n="footer.team.label">Team:</span> <span id="teamNames"></span></div>
+      <div class="muted" style="color:#8fae9c;font-size:13px" data-i18n="footer.tagline">Follow your food scraps back to the soil.</div>
+    </div>
+  </footer>
+
+  <script type="module">
+    /* ─────────── mascots (copied from docs/prototype/mascots.js) ─────────── */
+    const RIPE_FILL = { fresh:'#F2C230', ripe:'#E8B41E', spotty:'#D99E1C', browning:'#B07A2A', rotten:'#7A5A2E' };
+    const RIPE_SPOTS = { fresh:0, ripe:2, spotty:5, browning:9, rotten:14 };
+    function mulberry32(a){ return function(){ a|=0; a=(a+0x6D2B79F5)|0; let t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
+    function peelSvg(state='fresh', size=120){
+      const fill = RIPE_FILL[state] ?? RIPE_FILL.fresh;
+      const n = RIPE_SPOTS[state] ?? 0;
+      let spots=''; const rnd=mulberry32(42);
+      for(let i=0;i<n;i++){ const cx=40+rnd()*50, cy=30+rnd()*70, r=2+rnd()*4; spots+=`<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#4A3514" opacity="0.5"/>`; }
+      const mouth = state==='rotten'
+        ? '<path d="M52 92 q13 -8 26 0" stroke="#2A1E0A" stroke-width="3" fill="none" stroke-linecap="round"/>'
+        : '<path d="M52 90 q13 10 26 0" stroke="#2A1E0A" stroke-width="3" fill="none" stroke-linecap="round"/>';
+      return `<svg class="mascot" width="${size}" height="${size}" viewBox="0 0 130 130" role="img" aria-label="Peel the banana, ${state}">
+        <path d="M30 20 C20 55 28 100 70 112 C110 118 116 70 108 40 C104 58 96 92 66 96 C40 96 36 60 46 24 Z" fill="${fill}" stroke="#6B4E12" stroke-width="2"/>
+        <path d="M46 24 C40 55 42 86 66 96" fill="none" stroke="#C99A1A" stroke-width="2" opacity="0.6"/>
+        ${spots}
+        <circle cx="56" cy="74" r="4" fill="#2A1E0A"/><circle cx="80" cy="74" r="4" fill="#2A1E0A"/>
+        ${mouth}</svg>`;
+    }
+    function bramSvg(size=120){
+      return `<svg class="mascot" width="${size}" height="${size}" viewBox="0 0 130 130" role="img" aria-label="Bram the broccoli">
+        <rect x="56" y="78" width="18" height="34" rx="8" fill="#B7D8A0"/>
+        <g fill="#2F7A55" stroke="#1F5C3F" stroke-width="2"><circle cx="45" cy="55" r="20"/><circle cx="85" cy="55" r="20"/><circle cx="65" cy="40" r="22"/><circle cx="65" cy="62" r="20"/></g>
+        <circle cx="57" cy="52" r="4" fill="#0f2117"/><circle cx="76" cy="52" r="4" fill="#0f2117"/>
+        <path d="M58 62 q7 7 14 0" stroke="#0f2117" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+    }
+    function coraSvg(size=120){
+      return `<svg class="mascot" width="${size}" height="${size}" viewBox="0 0 130 130" role="img" aria-label="Cora the carrot">
+        <g fill="#2F7A55" stroke="#1F5C3F" stroke-width="2"><path d="M58 22 q-10 -14 -4 2 Z"/><path d="M65 18 q0 -16 0 4 Z"/><path d="M72 22 q10 -14 4 2 Z"/></g>
+        <path d="M48 36 L82 36 L65 112 Z" fill="#E07B2A" stroke="#C86A12" stroke-width="2"/>
+        <line x1="55" y1="55" x2="60" y2="56" stroke="#B85E10" stroke-width="2"/><line x1="68" y1="55" x2="74" y2="56" stroke="#B85E10" stroke-width="2"/><line x1="58" y1="72" x2="68" y2="73" stroke="#B85E10" stroke-width="2"/>
+        <circle cx="59" cy="48" r="3.5" fill="#2A1405"/><circle cx="71" cy="48" r="3.5" fill="#2A1405"/>
+        <path d="M60 56 q5 5 10 0" stroke="#2A1405" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+    }
+
+    /* ─────────── i18n (same shape as docs/prototype/i18n.js) ─────────── */
+    const LOCALES = [
+      { code:'en', label:'English' }, { code:'es', label:'Español' }, { code:'pt', label:'Português' },
+      { code:'ht', label:'Kreyòl' }, { code:'zh', label:'中文' }, { code:'vi', label:'Tiếng Việt' },
+    ];
+    const DICT = {
+      en: {
+        'nav.try':'Try the app',
+        'hero.eyebrow':'Free forever for residents',
+        'hero.title':'Follow your food scraps back to the soil.',
+        'hero.sub':"Sort it, drop it, and keep a weekly streak that follows you anywhere. GroundLoop makes composting easy to join — and gives cities the anonymized picture they need to add drop-off sites where they help most.",
+        'hero.cta.try':'Try the app', 'hero.cta.partners':'For cities & companies',
+        'hero.trust':'No login. No install. Runs right in your browser.',
+        'demo.eyebrow':'See it for yourself', 'demo.title':'The live app — right here.',
+        'demo.lead':"No login, no install, no server. Use the resident app below, or switch to the partner dashboard — it's the real thing running in sample mode.",
+        'demo.full':'Open full screen ↗', 'demo.partner':'Open the partner dashboard ↗',
+        'phone.peel':'Peel is fresh. Nice work this week!', 'phone.streak':'Weekly streak', 'phone.log':'📸 Log a drop-off',
+        'problem.eyebrow':'The problem', 'problem.title':'Good scraps keep ending up in the wrong place.',
+        'problem.lead':"Food is the heaviest thing most of us throw away — and it doesn't have to be waste at all.",
+        'problem.p1.t':'Scraps go to landfill', 'problem.p1.b':'Buried food scraps rot without air and release methane, instead of becoming compost for local soil.',
+        'problem.p2.t':"No one's sure what's compostable", 'problem.p2.b':'Rules change from city to city. People guess, give up, or contaminate the bin.',
+        'problem.p3.t':"Cities can't see the gaps", 'problem.p3.b':"Programme managers don't know which neighbourhoods want a drop-off site and have nowhere to go.",
+        'how.eyebrow':'For residents', 'how.title':'How it works', 'how.lead':'Four small steps that fit into a normal week.',
+        'how.s1.t':'Sort it', 'how.s1.b':'Ask "can it go in?" and get a city-specific answer in a tap.',
+        'how.s2.t':'Drop it', 'how.s2.b':'Find a nearby drop-off site on the map and log your visit.',
+        'how.s3.t':'Keep your streak', 'how.s3.b':'Compost once a week to keep your streak — it travels with you to any city.',
+        'how.s4.t':'See your recap', 'how.s4.b':'Look back at your season: drop-offs, longest streak, where your scraps went.',
+        'how.peel.t':'Meet Peel the banana.',
+        'how.peel.b':'Peel the banana rots if you stop — getting spotty, then brown — and turns fresh again the moment you log a drop-off. A gentle mood, never a guilt trip.',
+        'every.eyebrow':'Built for everyone', 'every.title':'Everyone belongs in the loop.',
+        'every.lead':'Composting only works when it works for everybody.',
+        'every.langs.n':'6', 'every.langs.l':'languages at launch — English, Spanish, Portuguese, Haitian Creole, Chinese and Vietnamese',
+        'every.cities.n':'13 cities', 'every.cities.l':'across 5 countries, each with official local sorting rules',
+        'every.free.n':'Free', 'every.free.l':'forever for residents — every feature, no paywall',
+        'every.access.n':'A11y', 'every.access.l':'accessible design: clear contrast, labels, and reduced-motion support',
+        'partner.eyebrow':'For cities, haulers & companies', 'partner.title':'See where composting needs to grow.',
+        'partner.lead':'Residents stay free. Partners pay for insight, not people — aggregated, never personal.',
+        'partner.c1.t':'Neighbourhood-level insight', 'partner.c1.b':'Anonymized, aggregated activity by area — never a name, photo, exact location or individual history.',
+        'partner.c2.t':'Where to add drop-off sites', 'partner.c2.b':'Resident requests cluster into a ranked list of underserved areas, by distance to the nearest site.',
+        'partner.c3.t':'Participation trends',
+        'partner.bar.beacon':'Beacon Hill', 'partner.bar.jp':'Jamaica Plain', 'partner.bar.eastb':'East Boston',
+        'partner.cta':'See the partner dashboard',
+        'priv.eyebrow':'Privacy promise', 'priv.title':'Privacy is a promise, not a setting.',
+        'priv.lead':'The whole model depends on trust, so these rules bind every feature.',
+        'priv.p1':'We never sell your personal data — not your name, photos, locations or history.',
+        'priv.p2':'Partners only ever see aggregates — totals and trends for an area, never you.',
+        'priv.p3':'Any area with fewer than 10 opted-in people is hidden, so no one can be singled out.',
+        'priv.p4':'Sharing is opt-in only and off by default. Opt out any time and you leave every aggregate.',
+        'priv.more':'Read the full privacy promise',
+        'qr.eyebrow':'Get it on your phone', 'qr.title':'Scan to open the app.',
+        'qr.lead':"Point your phone's camera at the code — the demo opens in your browser, no install.",
+        'footer.kiro':'Built with Kiro', 'footer.github':'GitHub repository', 'footer.team.label':'Team:',
+        'footer.tagline':'Follow your food scraps back to the soil.',
+      },
+      es: {
+        'nav.try':'Prueba la app', 'hero.eyebrow':'Gratis para siempre para residentes',
+        'hero.title':'Sigue tus restos de comida de vuelta a la tierra.',
+        'hero.cta.try':'Prueba la app', 'hero.cta.partners':'Para ciudades y empresas',
+        'hero.trust':'Sin cuenta. Sin instalar. Funciona en tu navegador.',
+        'demo.eyebrow':'Compruébalo tú mismo', 'demo.title':'La app en vivo — aquí mismo.',
+        'demo.lead':'Sin cuenta, sin instalar, sin servidor. Usa la app de residentes abajo o cambia al panel de socios — es lo real en modo de muestra.',
+        'demo.full':'Abrir en pantalla completa ↗', 'demo.partner':'Abrir el panel de socios ↗',
+        'phone.streak':'Racha semanal', 'phone.log':'📸 Registrar un depósito',
+        'problem.eyebrow':'El problema', 'problem.title':'Buenos restos siguen acabando en el lugar equivocado.',
+        'how.eyebrow':'Para residentes', 'how.title':'Cómo funciona',
+        'how.s1.t':'Sepáralo', 'how.s2.t':'Deposítalo', 'how.s3.t':'Mantén tu racha', 'how.s4.t':'Ve tu resumen',
+        'how.peel.t':'Conoce a Peel la banana.',
+        'every.eyebrow':'Para todos', 'every.title':'Todos caben en el ciclo.',
+        'every.free.n':'Gratis', 'every.cities.n':'13 ciudades',
+        'partner.eyebrow':'Para ciudades, transportistas y empresas', 'partner.title':'Mira dónde debe crecer el compostaje.',
+        'partner.cta':'Ver el panel de socios',
+        'priv.eyebrow':'Promesa de privacidad', 'priv.title':'La privacidad es una promesa, no un ajuste.',
+        'priv.more':'Leer la promesa de privacidad completa',
+        'qr.title':'Escanea para abrir la app.',
+        'footer.kiro':'Hecho con Kiro', 'footer.github':'Repositorio de GitHub', 'footer.team.label':'Equipo:',
+        'footer.tagline':'Sigue tus restos de comida de vuelta a la tierra.',
+      },
+      pt: {
+        'nav.try':'Experimente o app', 'hero.eyebrow':'Grátis para sempre para moradores',
+        'hero.title':'Siga seus restos de comida de volta ao solo.',
+        'hero.cta.try':'Experimente o app', 'hero.cta.partners':'Para cidades e empresas',
+        'demo.eyebrow':'Veja você mesmo', 'demo.title':'O app ao vivo — aqui mesmo.',
+        'demo.lead':'Sem login, sem instalação, sem servidor. Use o app de moradores abaixo ou mude para o painel de parceiros — é o app real em modo de amostra.',
+        'demo.full':'Abrir em tela cheia ↗', 'demo.partner':'Abrir o painel de parceiros ↗',
+        'phone.streak':'Sequência semanal', 'phone.log':'📸 Registrar um depósito',
+        'problem.eyebrow':'O problema', 'how.eyebrow':'Para moradores', 'how.title':'Como funciona',
+        'how.peel.t':'Conheça a Peel, a banana.',
+        'every.eyebrow':'Para todos', 'every.free.n':'Grátis', 'every.cities.n':'13 cidades',
+        'partner.eyebrow':'Para cidades, coletores e empresas', 'partner.cta':'Ver o painel de parceiros',
+        'priv.eyebrow':'Promessa de privacidade', 'priv.more':'Ler a promessa de privacidade completa',
+        'qr.title':'Escaneie para abrir o app.',
+        'footer.kiro':'Feito com Kiro', 'footer.github':'Repositório no GitHub', 'footer.team.label':'Equipe:',
+        'footer.tagline':'Siga seus restos de comida de volta ao solo.',
+      },
+      ht: {
+        'nav.try':'Eseye app la', 'hero.eyebrow':'Gratis pou toutan pou rezidan',
+        'hero.title':'Swiv rès manje ou yo tounen nan tè a.',
+        'hero.cta.try':'Eseye app la', 'hero.cta.partners':'Pou vil ak konpayi',
+        'demo.eyebrow':'Gade li ou menm', 'demo.title':'App la an dirèk — la menm.',
+        'demo.lead':'San login, san enstalasyon, san sèvè. Sèvi ak app rezidan an anba a, oswa chanje pou tablo patnè a — se bagay reyèl la nan mòd egzanp.',
+        'demo.full':'Ouvri an plen ekran ↗', 'demo.partner':'Ouvri tablo patnè a ↗',
+        'phone.streak':'Seri chak semèn', 'how.eyebrow':'Pou rezidan', 'how.title':'Kijan li mache',
+        'how.peel.t':'Men Peel bannann lan.',
+        'every.eyebrow':'Pou tout moun', 'every.free.n':'Gratis', 'every.cities.n':'13 vil',
+        'partner.eyebrow':'Pou vil, transpòtè ak konpayi', 'partner.cta':'Gade tablo patnè a',
+        'priv.eyebrow':'Pwomès sou vi prive', 'priv.more':'Li tout pwomès sou vi prive a',
+        'qr.title':'Eskane pou ouvri app la.',
+        'footer.kiro':'Fèt ak Kiro', 'footer.github':'Depo GitHub', 'footer.team.label':'Ekip:',
+        'footer.tagline':'Swiv rès manje ou yo tounen nan tè a.',
+      },
+      zh: {
+        'nav.try':'试用应用', 'hero.eyebrow':'居民永久免费',
+        'hero.title':'让你的厨余回到土壤。',
+        'hero.cta.try':'试用应用', 'hero.cta.partners':'面向城市与企业',
+        'demo.eyebrow':'亲自体验', 'demo.title':'实时应用 — 就在这里。',
+        'demo.lead':'无需登录、无需安装、无需服务器。在下方使用居民应用，或切换到合作方面板 — 这是示例模式下运行的真实应用。',
+        'demo.full':'全屏打开 ↗', 'demo.partner':'打开合作方面板 ↗',
+        'phone.streak':'每周连续记录', 'how.eyebrow':'面向居民', 'how.title':'如何运作',
+        'how.peel.t':'认识香蕉 Peel。',
+        'every.eyebrow':'为每个人打造', 'every.free.n':'免费', 'every.cities.n':'13 座城市',
+        'partner.eyebrow':'面向城市、运输方与企业', 'partner.cta':'查看合作方面板',
+        'priv.eyebrow':'隐私承诺', 'priv.more':'阅读完整隐私承诺',
+        'qr.title':'扫码打开应用。',
+        'footer.kiro':'用 Kiro 打造', 'footer.github':'GitHub 仓库', 'footer.team.label':'团队：',
+        'footer.tagline':'让你的厨余回到土壤。',
+      },
+      vi: {
+        'nav.try':'Dùng thử ứng dụng', 'hero.eyebrow':'Miễn phí mãi mãi cho cư dân',
+        'hero.title':'Theo dấu rác thực phẩm của bạn trở về với đất.',
+        'hero.cta.try':'Dùng thử ứng dụng', 'hero.cta.partners':'Cho thành phố & doanh nghiệp',
+        'demo.eyebrow':'Tự mình trải nghiệm', 'demo.title':'Ứng dụng trực tiếp — ngay tại đây.',
+        'demo.lead':'Không đăng nhập, không cài đặt, không máy chủ. Dùng ứng dụng cư dân bên dưới, hoặc chuyển sang bảng đối tác — đây là ứng dụng thật chạy ở chế độ mẫu.',
+        'demo.full':'Mở toàn màn hình ↗', 'demo.partner':'Mở bảng đối tác ↗',
+        'phone.streak':'Chuỗi hàng tuần', 'how.eyebrow':'Cho cư dân', 'how.title':'Cách hoạt động',
+        'how.peel.t':'Gặp Peel quả chuối.',
+        'every.eyebrow':'Dành cho mọi người', 'every.free.n':'Miễn phí', 'every.cities.n':'13 thành phố',
+        'partner.eyebrow':'Cho thành phố, đơn vị thu gom & doanh nghiệp', 'partner.cta':'Xem bảng đối tác',
+        'priv.eyebrow':'Cam kết quyền riêng tư', 'priv.more':'Đọc toàn bộ cam kết quyền riêng tư',
+        'qr.title':'Quét để mở ứng dụng.',
+        'footer.kiro':'Xây dựng với Kiro', 'footer.github':'Kho GitHub', 'footer.team.label':'Nhóm:',
+        'footer.tagline':'Theo dấu rác thực phẩm của bạn trở về với đất.',
+      },
+    };
+    let current = 'en';
+    function setLocale(code){ if (DICT[code]) current = code; document.documentElement.lang = code; }
+    function t(key, vars){ let s = DICT[current]?.[key] ?? DICT.en[key] ?? key; if (vars) for (const [k,v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, String(v)); return s; }
+    function applyI18n(){ document.querySelectorAll('[data-i18n]').forEach((n)=>{ n.textContent = t(n.getAttribute('data-i18n')); }); }
+
+    /* ─────────── QR code ───────────
+       Pre-generated, verified QR (qrcode@1, byte mode, EC level M) that encodes
+       the live app URL. Inlined as a static SVG so the page needs no network,
+       no key-gated service and no runtime encoder — $0, offline, no console
+       errors. Verified to decode back to APP_URL. Regenerate if APP_URL changes:
+         npx qrcode "https://oasismat-collab.github.io/groundloop-app/prototype/" -t svg */
+    const QR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" shape-rendering="crispEdges"><path fill="#FFFFFF" d="M0 0h37v37H0z"/><path stroke="#14201A" d="M2 2.5h7m2 0h1m1 0h2m3 0h1m1 0h3m2 0h1m2 0h7M2 3.5h1m5 0h1m5 0h1m2 0h2m4 0h2m3 0h1m5 0h1M2 4.5h1m1 0h3m1 0h1m1 0h3m1 0h1m1 0h3m1 0h1m1 0h5m1 0h1m1 0h3m1 0h1M2 5.5h1m1 0h3m1 0h1m1 0h1m2 0h2m2 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1M2 6.5h1m1 0h3m1 0h1m1 0h4m2 0h3m1 0h3m2 0h2m1 0h1m1 0h3m1 0h1M2 7.5h1m5 0h1m1 0h1m1 0h4m4 0h1m1 0h3m1 0h1m1 0h1m5 0h1M2 8.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M10 9.5h2m1 0h2m3 0h1m2 0h4m1 0h1M2 10.5h1m1 0h5m4 0h1m1 0h1m2 0h2m1 0h1m2 0h1m3 0h5M3 11.5h3m3 0h1m2 0h1m1 0h2m2 0h6m1 0h1m2 0h2m1 0h2m1 0h1M3 12.5h1m1 0h2m1 0h1m2 0h1m2 0h4m1 0h1m3 0h1m3 0h2m1 0h1m1 0h1M5 13.5h3m1 0h1m1 0h5m1 0h1m4 0h3m1 0h1m1 0h1m1 0h5M5 14.5h1m2 0h1m1 0h1m3 0h1m1 0h1m2 0h1m1 0h1m2 0h2m1 0h1m1 0h3m1 0h2M3 15.5h1m2 0h2m3 0h2m2 0h1m1 0h1m3 0h5m2 0h1m2 0h1m1 0h2M3 16.5h3m2 0h1m1 0h3m2 0h6m2 0h1m3 0h2m2 0h1m1 0h1M4 17.5h1m2 0h1m2 0h3m3 0h1m1 0h1m1 0h2m1 0h3m1 0h2m2 0h2M3 18.5h2m3 0h4m1 0h1m5 0h2m3 0h4m1 0h2m3 0h1M4 19.5h2m1 0h1m2 0h5m3 0h1m1 0h6m2 0h2m1 0h2m1 0h1M3 20.5h1m1 0h1m2 0h2m1 0h2m2 0h1m1 0h1m4 0h2m3 0h1m1 0h2m1 0h2M4 21.5h1m1 0h1m3 0h2m4 0h3m1 0h4m1 0h2m2 0h5M3 22.5h10m1 0h1m2 0h1m1 0h1m1 0h2m1 0h1m1 0h2m2 0h2m2 0h1M2 23.5h3m1 0h1m2 0h1m2 0h1m1 0h2m3 0h1m1 0h5m2 0h1m2 0h2m1 0h1M2 24.5h1m1 0h2m1 0h2m3 0h1m4 0h3m3 0h2m2 0h2m1 0h2m1 0h1M2 25.5h1m4 0h1m2 0h4m2 0h3m1 0h1m2 0h1m1 0h1m1 0h2m1 0h5M2 26.5h1m1 0h1m1 0h3m1 0h1m1 0h1m1 0h6m5 0h7m2 0h1M10 27.5h5m3 0h6m1 0h2m3 0h1m1 0h1m1 0h1M2 28.5h7m3 0h3m1 0h3m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h2M2 29.5h1m5 0h1m1 0h1m1 0h1m2 0h1m1 0h1m3 0h1m1 0h1m1 0h2m3 0h3m1 0h1M2 30.5h1m1 0h3m1 0h1m1 0h6m3 0h1m2 0h1m3 0h6m1 0h2M2 31.5h1m1 0h3m1 0h1m1 0h7m1 0h1m2 0h2m2 0h3m2 0h1m1 0h3M2 32.5h1m1 0h3m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m1 0h1m2 0h3m1 0h1m1 0h2M2 33.5h1m5 0h1m4 0h2m1 0h2m3 0h4m2 0h2m1 0h3M2 34.5h7m1 0h8m1 0h1m1 0h1m2 0h3m2 0h1m3 0h1"/></svg>`;
+
+    /* ─────────── live app URL (must match the GitHub Pages URL) ─────────── */
+    const REPO = 'oasismat-collab/groundloop-app';
+    const OWNER = REPO.split('/')[0], NAME = REPO.split('/')[1];
+    const APP_URL = `https://${OWNER}.github.io/${NAME}/prototype/`;
+
+    /* ─────────── boot ─────────── */
+    // brand + phone + mascots
+    document.getElementById('brandMark').innerHTML = peelSvg('fresh', 24);
+    document.getElementById('phoneMark').innerHTML = peelSvg('fresh', 22);
+    document.getElementById('phonePeel').innerHTML = peelSvg('fresh', 96);
+    document.getElementById('peelStates').innerHTML = ['fresh','spotty','browning','rotten'].map(s=>peelSvg(s,72)).join('');
+    // phone streak strip (static sample: 13 done weeks, current week highlighted)
+    document.getElementById('phoneStrip').innerHTML = Array.from({length:16},(_,i)=>{
+      const done = i < 13; const cur = i === 15;
+      return `<div class="wk ${done?'done':''} ${cur?'current':''}"></div>`;
+    }).join('');
+
+    // footer links + team
+    document.getElementById('ghLink').href = `https://github.com/${REPO}`;
+    document.getElementById('teamNames').textContent = 'Maya Okafor · Léo Fontaine · Priya Nair · Sam Weaver';
+
+    // QR
+    const qrMarkup = QR_SVG;
+    const qrEl = document.getElementById('qr');
+    if (qrMarkup) qrEl.innerHTML = qrMarkup; else qrEl.textContent = 'Open the app:';
+    const qrLink = document.getElementById('qrLink');
+    qrLink.href = APP_URL; qrLink.textContent = APP_URL;
+
+    // language switcher
+    const langSel = document.getElementById('langSel');
+    langSel.innerHTML = LOCALES.map(l=>`<option value="${l.code}">${l.label}</option>`).join('');
+    langSel.value = current;
+    langSel.addEventListener('change', (e)=>{ setLocale(e.target.value); applyI18n(); });
+
+    // smooth-scroll for in-page nav buttons (reduced-motion aware; href anchor is the fallback)
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function scrollTo(id){ const target = document.getElementById(id); if (!target) return false; target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); return true; }
+    [['toPartners','partners'],['toDemo','demo'],['toDemoBar','demo']].forEach(([btn,sec])=>{
+      const el = document.getElementById(btn);
+      if (el) el.addEventListener('click', (e)=>{ if (scrollTo(sec)) e.preventDefault(); });
+    });
+
+    applyI18n();
+  </script>
+</body>
+</html>
