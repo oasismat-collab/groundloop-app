@@ -136,6 +136,20 @@ export default function CompostTracker() {
 
     // Save to localStorage
     saveCompostSession(calculatedResults, foodNames);
+    
+    // Save individual entries for points/dashboard
+    const POINTS_PER_ITEM = 50;
+    const existingEntries = JSON.parse(localStorage.getItem('compostEntries') || '[]');
+    
+    const newEntries = selectedFoods.map(food => ({
+      id: `${Date.now()}-${Math.random()}`,
+      food: food.name,
+      mass: food.massGrams,
+      date: new Date().toISOString(),
+      points: POINTS_PER_ITEM
+    }));
+    
+    localStorage.setItem('compostEntries', JSON.stringify([...existingEntries, ...newEntries]));
 
     // Clear the form
     setSelectedFoods([]);
@@ -145,8 +159,9 @@ export default function CompostTracker() {
     // Refresh the cumulative tracker
     setTrackerKey(prev => prev + 1);
 
-    // Show success message
-    alert('✅ Session saved! Check your cumulative impact below.');
+    // Show success message with points earned
+    const totalPoints = newEntries.length * POINTS_PER_ITEM;
+    alert(`✅ Session saved! You earned ${totalPoints} points. Check your dashboard!`);
 
     // Scroll to tracker
     setTimeout(() => {
