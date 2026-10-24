@@ -33,7 +33,7 @@ function getCurrentRank(points: number): { current: Rank; next: Rank | null; pro
     ? ((points - currentRank.minPoints) / (nextRank.minPoints - currentRank.minPoints)) * 100
     : 100;
   
-  return { current, next, progress };
+  return { current: currentRank, next: nextRank, progress };
 }
 
 export default function PointsTracker({ refreshKey }: { refreshKey?: number }) {
