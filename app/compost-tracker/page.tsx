@@ -8,6 +8,7 @@ import SelectedFoodsList, { type SelectedFood } from '../components/SelectedFood
 import NutrientResults from '../components/NutrientResults';
 import AvoidedImpacts from '../components/AvoidedImpacts';
 import CumulativeTracker from '../components/CumulativeTracker';
+import PointsTracker from '../components/PointsTracker';
 import { getMaterialById, getCompositeFoodById, type Material, type CompositeFood } from '@/lib/expanded-catalogue';
 import { calculateCompostImpact, type NutrientResults as NutrientResultsType } from '@/lib/nutrient-calculator';
 import { saveCompostSession } from '@/lib/storage';
@@ -161,7 +162,7 @@ export default function CompostTracker() {
 
     // Show success message with points earned
     const totalPoints = newEntries.length * POINTS_PER_ITEM;
-    alert(`✅ Session saved! You earned ${totalPoints} points. Check your dashboard!`);
+    alert(`✅ Session saved! You earned ${totalPoints} points! 🌱`);
 
     // Scroll to tracker
     setTimeout(() => {
@@ -201,6 +202,11 @@ export default function CompostTracker() {
             </p>
           </div>
         </section>
+
+        {/* Points/Rank Tracker */}
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+          <PointsTracker refreshKey={trackerKey} />
+        </div>
 
         {/* Search Section */}
         <section className="input-panel" style={{ marginBottom: '32px' }}>
