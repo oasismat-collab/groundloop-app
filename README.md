@@ -38,6 +38,16 @@ npm run typecheck
 - Versioned local seeds, source record metadata, reviewed composition and separate process assumptions.
 - Server-only USDA integration with local fallback.
 
+## Live demo (embedded)
+
+The GroundLoop companion app (the web-demo prototype) ships as a static bundle under
+[`public/prototype/`](public/prototype/) and is served at **`/prototype/`**. The home page
+embeds it inline: scroll down from the hero and the **"See it for yourself"** section shows
+the real app running in an `<iframe>` in sample mode — no login, no install, no server.
+Links beside the embed open it full screen (`/prototype/`) and jump straight to the partner
+dashboard (`/prototype/#partner`). The prototype is a single self-contained page (Leaflet +
+OpenStreetMap, i18n, sample data) and makes no authenticated network calls.
+
 ## USDA API
 
 Get a key from https://fdc.nal.usda.gov/api-key-signup/ and set `USDA_API_KEY` in `.env.local`. Never prefix it with `NEXT_PUBLIC_`. Restart the development server after changing environment variables.
