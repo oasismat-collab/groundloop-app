@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View, Pressable, Image, StyleSheet, Switch, ActivityIndicator } from 'react-native';
+import { ScrollView, Text, View, Pressable, Image, StyleSheet, Switch, ActivityIndicator, AccessibilityInfo } from 'react-native';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -8,10 +8,13 @@ import { useProfile } from '../src/hooks/useProfile';
 import { REGIONS, type Site } from '../src/data/regions';
 import { submitDropoff, watchDropoff, updateProfile } from '../src/lib/api';
 import { Button, Card, Eyebrow } from '../src/components/ui';
-import { Peel } from '../src/components/Mascot';
+import { RevivingPeel } from '../src/components/Mascot';
+import { badgesFor, type Badge } from '../src/lib/badges';
+import { streakInfo } from '../src/lib/streak';
 import { useTheme } from '../src/theme';
 
 type Step = 'where' | 'proof' | 'sending' | 'done';
+type DropResult = { proofLevel?: 'self' | 'photo' | 'verified' | 'partner'; seedsAwarded?: number; careful?: boolean };
 const SITE_LABEL = { curb: 'Curbside collection', station: 'Neighbourhood collection station', rfid: 'Building food waste bin', none: 'Home composter' } as const;
 
 export default function Log() {
@@ -23,8 +26,12 @@ export default function Log() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [useLocation, setUseLocation] = useState(true);
   const [careful, setCareful] = useState(true);
-  const [result, setResult] = useState<{ proofLevel?: string; seedsAwarded?: number } | null>(null);
+  const [result, setResult] = useState<DropResult | null>(null);
+  const [badges, setBadges] = useState<Badge[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => { AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion); }, []);
 
   useEffect(() => { if (region.kind !== 'drop') setStep('proof'); }, [region.kind]);
 
@@ -51,6 +58,9 @@ export default function Log() {
         geo = { lat: fix.coords.latitude, lng: fix.coords.longitude, accuracy: fix.coords.accuracy ?? 999 };
       }
     }
+    // Snapshot the pre-drop count so we can detect the user's very first drop-off.
+    const pc = profile?.proofCounts;
+    const priorCount = pc ? pc.self + pc.photo + pc.verified : 0;
     try {
       const id = await submitDropoff(user.uid, {
         region: region.id,
@@ -62,7 +72,15 @@ export default function Log() {
       });
       if (site && !usualId) updateProfile(user.uid, { usualSite: { region: region.id, siteId: site.id } }).catch(() => undefined);
       const stop = watchDropoff(user.uid, id, (d) => {
-        if (d.status === 'verified') { setResult(d as never); setStep('done'); stop(); }
+        if (d.status === 'verified') {
+          const res = d as DropResult;
+          setResult(res);
+          // Streak after this drop-off, read from the (now updated) profile.
+          const streak = streakInfo(profile?.weeks ?? [], profile?.paused ?? []).count || 1;
+          setBadges(badgesFor(res, { streak, priorCount, freezes: profile?.freezes }));
+          setStep('done');
+          stop();
+        }
       });
       // Offline or slow function: show the saved state after a short wait.
       setTimeout(() => setStep((s) => (s === 'sending' ? 'done' : s)), 8000);
@@ -109,9 +127,20 @@ export default function Log() {
         )}
         {step === 'done' && (
           <View style={styles.center}>
-            <Peel ripeness="fresh" width={180} />
+            <RevivingPeel width={180} reduceMotion={reduceMotion} />
             {result?.seedsAwarded ? <Text style={[styles.big, { color: t.forest2 }]}>+{result.seedsAwarded}</Text> : null}
             <Text style={{ color: t.ink, fontWeight: '700', fontSize: 18 }}>{result ? `Logged · ${result.proofLevel === 'verified' ? 'Photo + location' : result.proofLevel === 'photo' ? 'Photo' : 'Self-reported'}` : 'Saved. We’ll verify it when you’re back online.'}</Text>
+            {result && <Text style={{ color: t.muted }}>Seeds reward proof and consistency, never how much you throw away.</Text>}
+            {badges.length > 0 && (
+              <View style={styles.badges}>
+                {badges.map((b) => (
+                  <View key={b.id} style={[styles.badge, { backgroundColor: t.forestSoft, borderColor: t.line }]}>
+                    <Text style={{ color: t.forest, fontWeight: '800' }}>{b.label}</Text>
+                    <Text style={{ color: t.muted, fontSize: 12, textAlign: 'center' }}>{b.note}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
             <Button title="Done" onPress={() => router.back()} />
           </View>
         )}
@@ -128,4 +157,6 @@ const styles = StyleSheet.create({
   img: { width: '100%', height: 240 },
   between: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   center: { alignItems: 'center', gap: 12, paddingTop: 40 },
+  badges: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
+  badge: { borderWidth: 1, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 12, gap: 2, alignItems: 'center', maxWidth: 160 },
 });
