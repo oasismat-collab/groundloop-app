@@ -4,6 +4,7 @@ import { parse, type Interpretation } from '@/lib/parser';
 import { calculate, formatMass, elements } from '@/lib/calculate';
 import { demoProcess } from '@/lib/process';
 import { USDA_REPORT, type Element, portionEvidence, materials } from '@/lib/expanded-catalogue';
+import PointsTracker from './components/PointsTracker';
 const examples=['One banana','A banana skin','Half an apple','Two orange peels'];
 const names:Record<Element,string>={N:'Nitrogen',P:'Phosphorus',K:'Potassium',Ca:'Calcium',Mg:'Magnesium',S:'Sulfur',Fe:'Iron',Zn:'Zinc'};
 function Sprout({className=''}:{className?:string}) {return <svg className={className} viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 43V23M24 29C8 30 5 17 7 7c13 0 22 7 17 22ZM24 22C23 8 34 4 43 5c0 12-6 20-19 17Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;}
@@ -16,6 +17,7 @@ export default function Home(){
  const [showSuggestions, setShowSuggestions] = useState(false);
  const [selectedIndex, setSelectedIndex] = useState(-1);
  const inputRef = useRef<HTMLInputElement>(null);
+ const [trackerKey, setTrackerKey] = useState(0); // Force PointsTracker to refresh
  
  // Build food suggestions from materials
  const allFoodOptions = Array.from(new Set(materials.flatMap(m => m.aliases))).sort();
@@ -34,7 +36,26 @@ export default function Home(){
  }, [text]);
  
  const process=demoProcess; const result=input ? calculate(input,process) : null;
- function interpret(phrase:string){setText(phrase);setShowSuggestions(false);try{const next=parse(phrase);setInput(next);setMass(String(Math.round(next.mass*10)/10));setError('');setAdjustError('');setTimeout(()=>resultsRef.current?.scrollIntoView({behavior:'smooth',block:'start'}),100);}catch(e){setError((e as Error).message);}}
+ 
+ function saveToAccount(food: string, mass: number) {
+   const entries = JSON.parse(localStorage.getItem('compostEntries') || '[]');
+   const newEntry = {
+     id: Date.now().toString(),
+     food,
+     mass,
+     date: new Date().toISOString(),
+     points: 50
+   };
+   entries.push(newEntry);
+   localStorage.setItem('compostEntries', JSON.stringify(entries));
+   setTrackerKey(prev => prev + 1); // Refresh PointsTracker
+   return newEntry;
+ }
+ 
+ function interpret(phrase:string){setText(phrase);setShowSuggestions(false);try{const next=parse(phrase);setInput(next);setMass(String(Math.round(next.mass*10)/10));setError('');setAdjustError('');
+ // Save to account and award points
+ saveToAccount(next.label, next.mass);
+ setTimeout(()=>resultsRef.current?.scrollIntoView({behavior:'smooth',block:'start'}),100);}catch(e){setError((e as Error).message);}}
  function selectSuggestion(suggestion: string) {
    const phrase = `one ${suggestion}`;
    interpret(phrase);
@@ -58,6 +79,9 @@ export default function Home(){
  return <><header className="site-header"><a className="brand" href="#"><Sprout/>groundwork<span className="brand-dot">.</span></a><div style={{display:'flex',gap:'1rem'}}><a className="header-link" href={`${BASE}/dashboard`}>Dashboard <span>↗</span></a><a className="header-link" href="#demo">Live Demo <span>↗</span></a><a className="header-link" href={`${BASE}/map`}>Find Locations <span>↗</span></a><a className="header-link" href={`${BASE}/drop-off`}>Log Drop-Off <span>↗</span></a><a className="header-link" href={`${BASE}/compost-tracker`}>Track Impact <span>↗</span></a><a className="header-link" href="#soil-story">Science <span>↗</span></a></div></header><main><section className="hero"><div><div className="eyebrow"><span/> FROM FOOD SCRAPS TO SOIL</div><h1>Small scraps.<br/><em>New beginnings.</em></h1><p className="hero-copy">Find composting drop-off locations near you, log your drop-offs, and track the nutrients you're returning to the soil.</p><div className="hero-note"><Sprout/> A small contribution to something living.</div></div><SoilArt/></section>
  <section id="demo" className="demo" aria-labelledby="demo-heading"><div className="demo-head"><div className="eyebrow"><span/> SEE IT FOR YOURSELF</div><h2 id="demo-heading">The GroundLoop app, <em>running right here.</em></h2><p className="demo-lead">Scroll stops here: this is the real companion app in sample mode — no login, no install, no server. Use the resident app below, or switch to the partner dashboard inside the window.</p></div><div className="demoframe"><div className="bar" aria-hidden="true"><span className="dot"/><span className="dot"/><span className="dot"/><span className="url">groundloop · live demo (sample mode)</span></div><iframe src={`${BASE}/prototype/`} title="GroundLoop interactive browser demo" loading="lazy" allow="geolocation"/></div><div className="demo-actions"><a className="solid" href={`${BASE}/prototype/`} target="_blank" rel="noreferrer">Open full screen <span aria-hidden="true">↗</span></a><a className="ghost" href={`${BASE}/prototype/#partner`} target="_blank" rel="noreferrer">Open the partner dashboard <span aria-hidden="true">↗</span></a></div></section>
  <section className="input-panel" aria-labelledby="input-heading"><div className="step-label">01 <span>START WITH YOUR SCRAP</span></div><h2 id="input-heading">What food did you throw away?</h2><p>No scales. No questionnaire. Just tell us in your own words.</p><form onSubmit={e=>{e.preventDefault();interpret(text);}}><label className="sr-only" htmlFor="food-input">Food, part and quantity</label><div className="input-row" style={{position:'relative'}}><input ref={inputRef} id="food-input" value={text} onChange={e=>setText(e.target.value)} onKeyDown={handleKeyDown} onFocus={()=>text.length>0&&setShowSuggestions(true)} placeholder="e.g. Two orange peels" aria-describedby={error?'parse-error':'input-help'} aria-invalid={!!error} maxLength={200} autoComplete="off"/>{showSuggestions && suggestions.length > 0 && <ul style={{position:'absolute',top:'100%',left:0,right:0,background:'white',border:'1px solid #ddd',borderRadius:'8px',marginTop:'4px',maxHeight:'300px',overflowY:'auto',listStyle:'none',padding:'0',margin:'4px 0 0 0',boxShadow:'0 4px 12px rgba(0,0,0,0.1)',zIndex:1000}}>{suggestions.map((suggestion,idx)=><li key={suggestion} onClick={()=>selectSuggestion(suggestion)} onMouseEnter={()=>setSelectedIndex(idx)} style={{padding:'12px 16px',cursor:'pointer',background:idx===selectedIndex?'#f0f0f0':'white',borderBottom:idx<suggestions.length-1?'1px solid #eee':'none',transition:'background 0.15s'}}>{suggestion}</li>)}</ul>}<button className="primary" type="submit">Explore its potential <span aria-hidden="true">↗</span></button></div></form><div id="input-help" className="examples"><span>Try a little inspiration</span>{examples.map(x=><button key={x} onClick={()=>interpret(x)}>{x} <span aria-hidden="true">↗</span></button>)}</div>{error&&<p id="parse-error" role="alert" className="error">{error}</p>}</section>
+ <section style={{padding:'2rem 1rem',maxWidth:'800px',margin:'0 auto'}}>
+   <PointsTracker key={trackerKey} />
+ </section>
  {input && result && <section className="results" ref={resultsRef} aria-labelledby="result-heading"><div className="result-top"><div><div className="step-label">02 <span>ITS POTENTIAL, EXPLAINED</span></div><h2 id="result-heading">Good things can come full circle.</h2></div><span className="pill">↻ &nbsp; Through finished compost</span></div><div className="interpretation" aria-live="polite"><span className="fruit-symbol" aria-hidden="true">{input.food==='banana'?'◒':input.food==='orange'?'●':'◕'}</span><div><small>WE UNDERSTOOD</small><h3>{input.label}</h3><p>About {Math.round(input.mass)} g fresh material · {input.grams===null?'medium portion defaults':'your portion'}</p></div><details className="adjust"><summary>Adjust portion <span aria-hidden="true">⌄</span></summary><div><label htmlFor="part">Part</label><select id="part" value={input.part} onChange={e=>interpret(`1 ${input.food} ${e.target.value}`)}><option value="whole">Whole fruit</option><option value="flesh">Flesh only</option><option value="peel">Peel only</option>{input.food==='apple'&&<option value="core">Core only</option>}</select><label htmlFor="mass">Fresh mass (g), optional</label><input id="mass" type="number" min="0.1" max="10000" step="any" value={mass} onChange={e=>adjust(e.target.value)} aria-invalid={!!adjustError}/>{adjustError&&<p role="alert" className="error">{adjustError}</p>}<small>Whole-fruit adjustments preserve the default component proportions.</small></div></details></div>
  <div className="mode is-demo"><div><strong>Illustrative demonstration</strong><p>N 70% · P 93% · K 85% · Ca/Mg/Fe/Zn 95% retained · 100% applied. Example assumptions based on EPA composting research.</p></div></div>
  <div className="cards">{(['N','P','K','Ca','Mg','Fe','Zn'] as Element[]).filter(e=>result.nutrients[e]!==null).map(e=><article key={e} className="impact-card nutrient-card"><div className="card-icon nutrient-icon" style={{fontSize:'2rem'}}>{e}</div><span className="card-number">NUTRIENT</span><h3>{names[e]}</h3><p className="metric">{formatMass(result.nutrients[e])}</p><span className="status">Illustrative scenario</span><p>Returned to soil through finished compost. Essential plant nutrient.</p><div className="card-foot">{e==='N'?'Derived from protein content':'From USDA FoodData Central'}</div></article>)}</div>
