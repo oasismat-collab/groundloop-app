@@ -1,4 +1,4 @@
-import { foods, components, type Food } from './catalogue';
+import { foods, components, type Food } from './expanded-catalogue';
 export type Interpretation = {food:Food; part:string; quantity:number; grams:number|null; mass:number; label:string};
 const numbers: Record<string,number> = {a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,half:.5,quarter:.25,'one-third':1/3,'a third':1/3,'one third':1/3,'a half':.5,'a quarter':.25};
 export function parse(input:string): Interpretation {

@@ -1,4 +1,4 @@
-import { components, type Element, type Material, type Value } from './catalogue';
+import { components, type Element, type Material, type Value } from './expanded-catalogue';
 import type { Interpretation } from './parser';
 import type { Process } from './process';
 export function freshGrams(value:Value, moisture:number|null):number|null {

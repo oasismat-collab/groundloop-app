@@ -2037,3 +2037,83 @@ export function getMaterialsByCategory(category: keyof typeof categories): Mater
  * Documents the source and methodology for default portion sizes
  */
 export const portionEvidence = 'portion-v2-expanded: Typical serving sizes are based on USDA standard reference portions and common household measures. Individual portions vary; all values are editable. Database includes 60 foods with nutritional data from USDA FoodData Central SR Legacy.';
+
+/**
+ * Legacy Compatibility Layer
+ * These exports maintain backward compatibility with the original catalogue structure
+ * used by parser.ts and calculate.ts
+ */
+
+// Add legacy properties to Material type for backward compatibility
+export interface LegacyMaterial extends Material {
+  food: string;
+  portionG: number;
+}
+
+// Extract unique food base names (without parts like "flesh", "peel") from aliases
+// This creates a list like ['banana', 'apple', 'orange', 'strawberry', etc.]
+export const foods = Array.from(
+  new Set(
+    materials.flatMap(m => 
+      m.aliases.filter(alias => 
+        // Filter out aliases that include part names
+        !alias.toLowerCase().includes('peel') &&
+        !alias.toLowerCase().includes('skin') &&
+        !alias.toLowerCase().includes('core') &&
+        !alias.toLowerCase().includes('flesh') &&
+        !alias.toLowerCase().includes('shell') &&
+        !alias.toLowerCase().includes('pit')
+      )
+    )
+  )
+).sort();
+
+export type Food = string; // Changed from literal union to string since we have 60+ foods
+
+// Legacy component lookup function - maps new structure to old
+export function components(food: string, part: string): LegacyMaterial[] {
+  const foodLower = food.toLowerCase();
+  
+  // Find all materials that match the food name in their aliases
+  const matchingMaterials = materials.filter(m =>
+    m.aliases.some(alias => alias.toLowerCase() === foodLower || alias.toLowerCase() === foodLower + 's')
+  );
+  
+  if (matchingMaterials.length === 0) {
+    return [];
+  }
+  
+  // For "whole" part, return all materials that share the same base food name
+  if (part === 'whole') {
+    // Get the base food name from the first match
+    const baseFood = matchingMaterials[0];
+    // Find all parts of this food (flesh, peel, core, etc.)
+    const allParts = materials.filter(m => {
+      // Check if this material shares any alias with the base food
+      return m.aliases.some(alias => 
+        baseFood.aliases.some(baseAlias => 
+          alias.toLowerCase().includes(baseAlias.toLowerCase()) ||
+          baseAlias.toLowerCase().includes(alias.toLowerCase())
+        )
+      );
+    });
+    
+    return allParts.map(m => ({
+      ...m,
+      food: foodLower,
+      portionG: m.typicalServing
+    }));
+  }
+  
+  // For specific parts (flesh, peel, core, etc.), match the part
+  const found = matchingMaterials.filter(m => 
+    m.part.toLowerCase() === part.toLowerCase() ||
+    m.part.toLowerCase() === 'whole' // If asking for a specific part, also include 'whole' items
+  );
+  
+  return found.map(m => ({
+    ...m,
+    food: foodLower,
+    portionG: m.typicalServing
+  }));
+}
