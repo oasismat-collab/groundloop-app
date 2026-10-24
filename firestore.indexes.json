@@ -29,6 +29,24 @@
       ]
     },
     {
+      "collectionGroup": "members",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "region",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "streak",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "proofShare",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "siteRequests",
       "queryScope": "COLLECTION",
       "fields": [

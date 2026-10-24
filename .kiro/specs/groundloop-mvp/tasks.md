@@ -50,7 +50,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
 
 - [x] 10. Check tab – verdict UI over `verdict.ts` – _Req 3.3, 3.4_
 - [ ] 11. Community tab – started (composer, feed, city filter, cheers done)
-  - [ ] 11.1 Consistency board from `members`, ordered by streak then proofShare – _Req 7.4_
+  - [x] 11.1 Consistency board from `members`, ordered by streak then proofShare – _Req 7.4_
   - [ ] 11.2 Attach latest proof photo; report and hide – _Req 7.1, 7.6_
 - [ ] 12. You tab – started (cities, travel mode, freezes, 16-week strip, sign out done)
   - [ ] 12.1 History list with proof badges and thumbnails, badges grid – _Req 4_
