@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/joe/Documents/AI%20Pilot%20Challenge/app/layout.tsx"],"sourcesContent":["import type { Metadata } from 'next';\nimport './globals.css';\nexport const metadata: Metadata = { title: 'Groundwork — small scraps, living soil', description: 'Explore how fruit scraps can contribute to soil through compost, with transparent evidence and assumptions.' };\nexport default function Layout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang=\"en\"><body>{children}</body></html>; }\n"],"names":["metadata","title","description","Layout","children","lang"],"mappings":";;;;;;;;;AAEO,MAAMA,WAAqB;IAAEC,OAAO;IAA0CC,aAAa;AAA8G;AACjM,SAASC,OAAO,EAAEC,QAAQ,EAA2C;IAAI,qBAAO,8OAAC;QAAKC,MAAK;kBAAK,cAAA,8OAAC;sBAAMD;;;;;;;;;;;AAAyB"}},
+    {"offset": {"line": 41, "column": 0}, "map": {"version":3,"sources":["file:///Users/joe/Documents/AI%20Pilot%20Challenge/node_modules/next/src/server/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.ts"],"sourcesContent":["module.exports = (\n  require('../../module.compiled') as typeof import('../../module.compiled')\n).vendored['react-rsc']!.ReactJsxDevRuntime\n"],"names":["module","exports","require","vendored","ReactJsxDevRuntime"],"mappings":"AAAAA,OAAOC,OAAO,GACZC,QAAQ,4HACRC,QAAQ,CAAC,YAAY,CAAEC,kBAAkB","ignoreList":[0]}}]
+}
