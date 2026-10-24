@@ -101,9 +101,16 @@ npm start                        # then open the dev build on your phone
 Tests and typecheck:
 
 ```bash
-npm test
+npm test             # unit tests (streak, geo, verdict)
 npm run typecheck
+npm run test:rules   # Firestore + Storage security-rules tests (starts the emulators; needs Java)
 ```
+
+`npm run test:rules` runs `@firebase/rules-unit-testing` against the Firestore
+and Storage emulators via `firebase emulators:exec` (config in
+`firebase.test.json`, jest config in `jest.rules.config.js`). It needs a JDK on
+the path. `npm test` deliberately excludes these so the fast unit suite stays
+emulator-free.
 
 ## How proof works
 
