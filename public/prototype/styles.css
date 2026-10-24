@@ -25,12 +25,23 @@ body {
 }
 .topbar .brand { font-weight: 800; font-size: 18px; letter-spacing: .2px; }
 .topbar .tagline { color: #CDE5D6; font-size: 13px; }
-.switch { margin-left: auto; display: flex; background: rgba(255,255,255,.14); border-radius: var(--radius-pill); padding: 3px; }
+.topbar-controls { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.switch { display: flex; background: rgba(255,255,255,.14); border-radius: var(--radius-pill); padding: 3px; }
 .switch button {
   border: 0; background: transparent; color: #E7F2EB; font-weight: 600; font-size: 13px;
   padding: 7px 14px; border-radius: var(--radius-pill); cursor: pointer;
 }
 .switch button.active { background: var(--onAccent); color: var(--forest); }
+
+/* global language toggle */
+.langtoggle { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.14); border-radius: var(--radius-pill); padding: 5px 10px 5px 12px; cursor: pointer; }
+.langtoggle .globe { font-size: 14px; line-height: 1; }
+.langtoggle select {
+  border: 0; background: transparent; color: #E7F2EB; font-weight: 600; font-size: 13px;
+  cursor: pointer; padding: 2px 2px; max-width: 150px; -webkit-appearance: none; appearance: none;
+}
+.langtoggle select:focus-visible { outline: 2px solid var(--onAccent); outline-offset: 2px; border-radius: 4px; }
+.langtoggle select option { color: #14201A; background: #fff; }
 
 .stage { display: flex; justify-content: center; padding: 28px 16px 60px; }
 
