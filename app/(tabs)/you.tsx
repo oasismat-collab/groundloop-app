@@ -122,6 +122,8 @@ export default function You() {
           )}
         </Card>
 
+        {/* Season recap (Req 9): a shareable story of the user's impact. */}
+        <Button title="See your season recap" kind="secondary" onPress={() => router.push('/recap')} />
         <Button title="Sign out" kind="secondary" onPress={() => signOut()} />
       </ScrollView>
     </SafeAreaView>

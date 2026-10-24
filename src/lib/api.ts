@@ -91,6 +91,17 @@ export function watchDropoff(uid: string, id: string, cb: (d: Record<string, unk
   return onSnapshot(doc(db, 'users', uid, 'dropoffs', id), (s) => s.exists() && cb(s.data()));
 }
 
+/** Distinct region ids the user has dropped off in, for the season recap (Req 9.1). */
+export async function recapCities(uid: string): Promise<string[]> {
+  const snap = await getDocs(query(collection(db, 'users', uid, 'dropoffs'), orderBy('createdAt', 'desc'), limit(100)));
+  const seen = new Set<string>();
+  for (const d of snap.docs) {
+    const r = (d.data() as { region?: string }).region;
+    if (r) seen.add(r);
+  }
+  return [...seen];
+}
+
 /** One finalised (or pending) drop-off, for the history list (Req 4). */
 export interface DropoffRecord {
   id: string;
