@@ -11,6 +11,8 @@
     "test": "jest",
     "test:rules": "firebase emulators:exec --only firestore,storage --project demo-groundloop-rules --config firebase.test.json \"jest --config jest.rules.config.js --ci\"",
     "gen:regions": "tsx scripts/gen-regions.ts",
+    "gen:demo-regions": "tsx scripts/gen-regions-data.ts",
+    "demo:check": "node docs/prototype/logic.spec.mjs",
     "lint": "expo lint",
     "deploy:backend": "firebase deploy --only firestore,storage,functions"
   },

@@ -6,6 +6,15 @@ inclusion: always
 
 GroundLoop helps people turn unavoidable food scraps into compost that reaches local soil, and makes that journey easy to join and possible to verify.
 
+## Business model
+
+- **Residents are free forever.** Every feature a resident sees — sorting rules, maps, streaks, proof, community, recaps — costs them nothing and always will. We never charge residents and never gate resident features behind a paywall.
+- **Partners pay for insight, not people.** Cities, haulers and companies pay for **anonymized, aggregated** insights: where coverage is thin, where to add drop-off sites, participation trends, proof-quality mix. See the partner dashboard.
+- **We never sell personal data.** We do not sell, rent or share personal data, names, photos, exact locations or individual histories with partners or anyone else. Partners only ever see aggregates that pass the thresholds in `privacy.md`.
+- **Only opted-in activity is ever counted.** A resident's activity contributes to partner aggregates only after they opt in (default off). Opting out removes them from every aggregate going forward.
+
+This split is the whole model: the free resident experience creates the trusted, verified signal; partners pay for the aggregate view of that signal. If a decision would make residents pay, expose an individual, or sell personal data, it is wrong.
+
 ## Who it serves
 
 | Person | Needs | GroundLoop gives them |

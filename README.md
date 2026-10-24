@@ -7,7 +7,7 @@ GroundLoop helps people sort food scraps correctly for their city, find where to
 - 📱 **App:** Expo (React Native) + TypeScript, Google and Apple sign-in
 - 🔥 **Backend:** Firebase Auth, Firestore, Storage, Cloud Functions
 - 🧭 **Built with Kiro:** steering and specs in [`.kiro/`](.kiro)
-- 🖥️ **Web prototype:** [`docs/prototype/index.html`](docs/prototype/index.html) (open in a browser; runs in sample mode)
+- 🖥️ **Browser demo (no install, no login):** [`docs/prototype/index.html`](docs/prototype/index.html) — a single static page (Leaflet + OpenStreetMap, i18n, sample data). Published with GitHub Pages at **`https://<owner>.github.io/<repo>/prototype/`**. Reuses the app's real logic (`src/lib`, `src/data`); spec in [`.kiro/specs/web-demo`](.kiro/specs/web-demo).
 
 ## What's in the box
 

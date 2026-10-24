@@ -35,7 +35,10 @@ functions/src/index.ts   Cloud Functions (trusted logic)
 firestore.rules          data access rules
 storage.rules            photo upload rules
 __tests__/               unit tests for src/lib
+data/                    public datasets (CSV + SOURCES.md credit)
+docs/prototype/          static browser demo (sample mode, Leaflet, i18n) for GitHub Pages
 .kiro/specs/             feature specs (requirements → design → tasks)
+.kiro/steering/          product.md, privacy.md, tech.md, structure.md
 ```
 
 Keep screens thin: data access in `src/lib/api.ts`, pure logic in `src/lib/*` with tests.
