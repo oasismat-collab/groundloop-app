@@ -19,6 +19,8 @@ export interface Profile {
   freezes?: number;
   best?: number;
   lastDropAt?: number;
+  /** When weeklyUpkeep last spent a freeze to save a missed week (Req 5.5). */
+  freezeUsedAt?: number;
   proofCounts?: { self: number; photo: number; verified: number };
 }
 
