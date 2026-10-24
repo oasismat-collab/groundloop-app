@@ -24,7 +24,7 @@
 @media(max-width:580px){.demo{padding-top:34px}.demoframe iframe{height:760px}}
 
 /* ══════════════════════════════════════════════════════════════════════
-   Map & Drop-Off pages — styled to match the Groundwork home page.
+   Map & Drop-Off pages — styled to match the GroundLoop home page.
    (These components previously used Tailwind classes that this project
    does not ship, so they rendered unstyled. These hand-written rules use
    the same tokens/serif/palette as the rest of the site.)

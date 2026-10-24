@@ -74,7 +74,7 @@ export default function Dashboard() {
       <header style={{ padding: '1.5rem 2rem', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link href="/" style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold', textDecoration: 'none' }}>
-            🌱 Groundwork
+            🌱 GroundLoop
           </Link>
           <nav style={{ display: 'flex', gap: '1.5rem' }}>
             <Link href="/" style={{ color: 'white', textDecoration: 'none' }}>Home</Link>
