@@ -5,15 +5,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProfile } from '../../src/hooks/useProfile';
 import { REGIONS } from '../../src/data/regions';
 import { streakInfo, ripeness } from '../../src/lib/streak';
-import { Peel, peelLine } from '../../src/components/Mascot';
+import { Peel, peelLine, Mascot } from '../../src/components/Mascot';
 import { WeekStrip } from '../../src/components/WeekStrip';
 import { Button, Card, Eyebrow } from '../../src/components/ui';
+import { useSessionMascot } from '../../src/hooks/useSessionMascot';
 import { useTheme } from '../../src/theme';
 
 const LOG_LABEL = { drop: 'I dropped off food scraps', curb: 'I put my food waste out', station: 'I emptied my bucket at the station', rfid: 'I used my building’s food waste bin', none: 'I added to my home composter' } as const;
 
 export default function Home() {
   const t = useTheme();
+  const { mascot } = useSessionMascot();
   const { user, profile } = useProfile();
   // Wait for the profile, and for a city to be chosen on first sign-in (Req 1.5).
   const region = profile?.currentRegion ? REGIONS[profile.currentRegion] : undefined;
@@ -30,7 +32,11 @@ export default function Home() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }}>
       <ScrollView contentContainerStyle={styles.wrap}>
-        <Text style={[styles.h1, { color: t.ink }]}>Hi, {first}</Text>
+        {/* Header shows the current session's mascot as the logo mark (Req 2.3). */}
+        <View style={styles.header}>
+          <Mascot id={mascot} size={34} />
+          <Text style={[styles.h1, { color: t.ink }]}>Hi, {first}</Text>
+        </View>
         <Text style={{ color: t.muted }} onPress={() => router.push('/region')}>{region.name} · {region.programme} ›</Text>
         {away && <Card style={{ backgroundColor: t.bananaSoft }}><Text style={{ color: t.ink }}>You’re in {region.name}. Your streak travels with you.</Text></Card>}
         <Card>
@@ -59,6 +65,7 @@ export default function Home() {
 }
 const styles = StyleSheet.create({
   wrap: { padding: 16, gap: 12 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   h1: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },
   big: { fontSize: 44, fontWeight: '800', letterSpacing: -1 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
