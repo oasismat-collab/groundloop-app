@@ -27,7 +27,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
   - [x] 5.1 `verifyDropoff` (photo freshness, perceptual hash, geofence, seeds, weeks, member summary) – _Req 4.4–4.7, 5.1, 5.4_
   - [x] 5.2 `onCheerCreated` / `onCheerDeleted` counters – _Req 7.3_
   - [x] 5.3 `weeklyUpkeep` scheduled function (freezes, travel pauses) – _Req 5.3, 5.5_
-  - [ ] 5.4 `retryPending` for drop-offs stuck in `pending` – _Design: error handling_
+  - [x] 5.4 `retryPending` for drop-offs stuck in `pending` – _Design: error handling_
   - [x] 5.5 Emulator tests with fixture photos (fresh, old EXIF, duplicate) – _Req 4.5, 4.6_
   - [x] 5.6 Script to generate `functions/src/regions.json` from `src/data/regions.ts`
 

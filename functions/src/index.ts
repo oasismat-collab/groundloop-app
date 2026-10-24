@@ -53,15 +53,26 @@ async function averageHash(buf: Buffer): Promise<string> {
 }
 const hamming = (a: string, b: string) => { let d = 0; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d++; return d; };
 
+interface DropoffData {
+  createdAt: number; region: string; siteId?: string; geo?: { lat: number; lng: number; accuracy: number };
+  photoPath?: string; careful: boolean; tz?: string; status?: string;
+}
+
 export const verifyDropoff = onDocumentCreated({ document: 'users/{uid}/dropoffs/{id}', memory: '512MiB' }, async (event) => {
   const snap = event.data;
   if (!snap) return;
-  const uid = event.params.uid;
-  const d = snap.data() as {
-    createdAt: number; region: string; siteId?: string; geo?: { lat: number; lng: number; accuracy: number };
-    photoPath?: string; careful: boolean; tz?: string;
-  };
+  await finalizeDropoff(event.params.uid, snap.ref, snap.data() as DropoffData);
+});
+
+/**
+ * Assigns the proof level, seeds and streak week for one drop-off and rebuilds
+ * the member summary. Idempotent on `status`: callers must only pass a drop-off
+ * that is still `pending`. Used by the onCreate trigger (verifyDropoff) and by
+ * the retry sweep (retryPending) for drop-offs whose first attempt failed.
+ */
+async function finalizeDropoff(uid: string, dropoffRef: FirebaseFirestore.DocumentReference, d: DropoffData): Promise<void> {
   const tz = d.tz || 'UTC';
+  const snap = { ref: dropoffRef };
   const userRef = db.doc(`users/${uid}`);
   const user = (await userRef.get()).data() ?? {};
 
@@ -74,10 +85,19 @@ export const verifyDropoff = onDocumentCreated({ document: 'users/{uid}/dropoffs
   }
 
   // Photo: fresh (EXIF capture within 15 min) and not a near-duplicate of earlier proof.
+  // A download failure (e.g. the upload is still in flight, or a transient Storage
+  // error) is treated as retryable: we throw so the drop-off stays `pending` and
+  // `retryPending` picks it up later, rather than silently downgrading it to `self`.
   let fresh = false, duplicate = false, hash: string | null = null;
   if (d.photoPath && d.photoPath.startsWith(`proofs/${uid}/`)) {
+    let buf: Buffer;
     try {
-      const [buf] = await getStorage().bucket().file(d.photoPath).download();
+      [buf] = await getStorage().bucket().file(d.photoPath).download();
+    } catch (e) {
+      logger.warn('photo download failed, leaving drop-off pending for retry', { uid, err: String(e) });
+      throw new Error(`photo download failed for ${d.photoPath}: ${String(e)}`);
+    }
+    try {
       const exif = await exifr.parse(buf, ['DateTimeOriginal']).catch(() => null);
       const taken: Date | undefined = exif?.DateTimeOriginal;
       fresh = !!taken && Math.abs(taken.getTime() - wallMs(d.createdAt, tz)) <= FRESH_MS;
@@ -85,7 +105,9 @@ export const verifyDropoff = onDocumentCreated({ document: 'users/{uid}/dropoffs
       const previous: string[] = user.photoHashes ?? [];
       duplicate = previous.some((h) => hamming(h, hash!) <= DUP_BITS);
     } catch (e) {
-      logger.warn('photo check failed', { uid, err: String(e) });
+      // The bytes are present but unreadable (corrupt/not an image): don't retry
+      // forever — fall through and finalise at the no-photo (self) level.
+      logger.warn('photo unreadable, finalising without photo proof', { uid, err: String(e) });
     }
   }
 
@@ -121,7 +143,7 @@ export const verifyDropoff = onDocumentCreated({ document: 'users/{uid}/dropoffs
     tx.update(snap.ref, { status: 'verified', proofLevel: proof, seedsAwarded: seeds, checks: { fresh, duplicate, distanceM: distance, located } });
     tx.set(db.doc(`members/${uid}`), await memberSummary(uid, { ...u, weeks, paused, best: Math.max(u.best ?? 0, after), proofCounts: counts }, now), { merge: false });
   });
-});
+}
 
 async function memberSummary(uid: string, u: FirebaseFirestore.DocumentData, now: Date) {
   const st = streakInfo(u.weeks ?? [], u.paused ?? [], now);
@@ -146,6 +168,46 @@ export const onCheerCreated = onDocumentCreated('posts/{postId}/cheers/{uid}', a
 });
 export const onCheerDeleted = onDocumentDeleted('posts/{postId}/cheers/{uid}', async (e) => {
   await db.doc(`posts/${e.params.postId}`).update({ cheerCount: FieldValue.increment(-1) });
+});
+
+const RETRY_AFTER_MS = 10 * 60 * 1000;
+const RETRY_BATCH = 50;
+
+/**
+ * Re-runs drop-offs stuck in `pending` for more than 10 minutes (design: error
+ * handling). A drop-off stays `pending` when `verifyDropoff` never ran or threw
+ * (e.g. the proof photo wasn't readable yet). Runs every 10 minutes, finalises a
+ * bounded batch, and isolates per-item failures so one bad doc can't block the rest.
+ */
+export const retryPending = onSchedule({ schedule: 'every 10 minutes', timeZone: 'UTC', memory: '512MiB' }, async () => {
+  const cutoff = Date.now() - RETRY_AFTER_MS;
+  const stuck = await db.collectionGroup('dropoffs')
+    .where('status', '==', 'pending')
+    .where('createdAt', '<=', cutoff)
+    .orderBy('createdAt', 'asc')
+    .limit(RETRY_BATCH)
+    .get();
+
+  if (stuck.empty) return;
+
+  let recovered = 0, failed = 0;
+  for (const doc of stuck.docs) {
+    // Path: users/{uid}/dropoffs/{id} — the user doc is the drop-off's grandparent.
+    const uid = doc.ref.parent.parent?.id;
+    if (!uid) {
+      logger.error('pending drop-off with no parent user', { path: doc.ref.path });
+      failed++;
+      continue;
+    }
+    try {
+      await finalizeDropoff(uid, doc.ref, doc.data() as DropoffData);
+      recovered++;
+    } catch (e) {
+      logger.warn('retry still failing for drop-off', { path: doc.ref.path, err: String(e) });
+      failed++;
+    }
+  }
+  logger.info('retryPending sweep complete', { found: stuck.size, recovered, failed });
 });
 
 /** Mondays: pause last week for travellers; spend a freeze for anyone who missed it after a done week. */
