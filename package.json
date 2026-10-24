@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:rules": "firebase emulators:exec --only firestore,storage --project demo-groundloop-rules --config firebase.test.json \"jest --config jest.rules.config.js --ci\"",
+    "gen:regions": "tsx scripts/gen-regions.ts",
     "lint": "expo lint",
     "deploy:backend": "firebase deploy --only firestore,storage,functions"
   },
@@ -45,6 +46,7 @@
     "jest": "^29.7.0",
     "jest-expo": "~52.0.2",
     "ts-jest": "^29.4.15",
+    "tsx": "^4.23.15",
     "typescript": "~5.3.3"
   },
   "jest": {

@@ -53,7 +53,7 @@ git push -u origin main
    - `structure.md`: where code goes.
 3. Open the **Specs** panel and select **groundloop-mvp**. `requirements.md` (EARS format) and `design.md` are done. In `tasks.md`, start the first unchecked task (3.4) and work down the list.
 4. For the partner dashboard, open **partner-dashboard**. Requirements are written; ask Kiro to generate the design and tasks from them.
-5. Suggested agent hook: "On save of `src/lib/streak.ts`, copy it to `functions/src/streak.ts` and run `npm test`" (or do task 5.6).
+5. Suggested agent hook: "On save of `src/lib/streak.ts`, copy it to `functions/src/streak.ts` and run `npm test`". Similarly, after editing `src/data/regions.ts`, run `npm run gen:regions` to rebuild `functions/src/regions.json` (the trusted copy the geofence check uses); `npm run gen:regions -- --check` fails if it's stale.
 
 ## 3. Set up Firebase
 
