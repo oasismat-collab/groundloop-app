@@ -13,6 +13,7 @@
     "gen:regions": "tsx scripts/gen-regions.ts",
     "gen:demo-regions": "tsx scripts/gen-regions-data.ts",
     "demo:check": "node docs/prototype/logic.spec.mjs",
+    "demo:verify": "node docs/prototype/verify.mjs all",
     "lint": "expo lint",
     "deploy:backend": "firebase deploy --only firestore,storage,functions"
   },

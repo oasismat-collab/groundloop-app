@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Regenerate demo regions on regions.ts save",
+      "trigger": "PostFileSave",
+      "matcher": "src/data/regions\\.ts$",
+      "action": {
+        "type": "command",
+        "command": "cd /projects/sandbox/groundloop-app && npx tsx scripts/gen-regions-data.ts && node docs/prototype/logic.spec.mjs",
+        "timeout": 120
+      }
+    }
+  ]
+}
