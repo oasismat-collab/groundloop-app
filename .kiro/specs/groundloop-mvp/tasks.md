@@ -55,6 +55,6 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
 - [ ] 12. You tab – started (cities, travel mode, freezes, 16-week strip, sign out done)
   - [ ] 12.1 History list with proof badges and thumbnails, badges grid – _Req 4_
 - [ ] 13. Host-a-bin form (You tab → "Offer a space") – _Req 8.2_
-- [ ] 14. Recap stories with share-as-image (`react-native-view-shot` + `expo-sharing`) – _Req 9_
+- [x] 14. Recap stories with share-as-image (`react-native-view-shot` + `expo-sharing`) – _Req 9_
 - [ ] 15. Accessibility pass – labels, dynamic type, contrast in dark mode – _All_
 - [ ] 16. EAS build profiles and store listings (privacy labels: location at check-in only, photos user-initiated) – _All_

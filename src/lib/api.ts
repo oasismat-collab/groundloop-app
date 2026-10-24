@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc, addDoc, collection, onSnapshot, query, orderBy, limit, where, serverTimestamp, type Unsubscribe } from 'firebase/firestore';
+import { doc, getDoc, getDocs, setDoc, updateDoc, addDoc, collection, onSnapshot, query, orderBy, limit, where, serverTimestamp, type Unsubscribe } from 'firebase/firestore';
 import { ref, uploadBytes } from 'firebase/storage';
 import { db, storage } from './firebase';
 import { coarse } from './geo';
@@ -87,6 +87,17 @@ export async function submitDropoff(uid: string, d: NewDropoff): Promise<string>
 
 export function watchDropoff(uid: string, id: string, cb: (d: Record<string, unknown>) => void): Unsubscribe {
   return onSnapshot(doc(db, 'users', uid, 'dropoffs', id), (s) => s.exists() && cb(s.data()));
+}
+
+/** Distinct region ids the user has dropped off in, for the season recap (Req 9.1). */
+export async function recapCities(uid: string): Promise<string[]> {
+  const snap = await getDocs(query(collection(db, 'users', uid, 'dropoffs'), orderBy('createdAt', 'desc'), limit(100)));
+  const seen = new Set<string>();
+  for (const d of snap.docs) {
+    const r = (d.data() as { region?: string }).region;
+    if (r) seen.add(r);
+  }
+  return [...seen];
 }
 
 export function watchFeed(region: string | null, cb: (posts: Array<Record<string, unknown> & { id: string }>) => void): Unsubscribe {

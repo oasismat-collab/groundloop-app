@@ -59,6 +59,7 @@ export default function RootLayout() {
         <Stack.Screen name="sign-in" />
         <Stack.Screen name="log" options={{ presentation: 'modal' }} />
         <Stack.Screen name="region" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="recap" options={{ presentation: 'modal' }} />
       </Stack>
       {greeting && (
         <Pressable style={[StyleSheet.absoluteFill, styles.splash, { backgroundColor: t.bg }]} onPress={() => setGreeting(false)} accessibilityRole="button" accessibilityLabel="Dismiss greeting">

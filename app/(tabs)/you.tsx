@@ -43,6 +43,8 @@ export default function You() {
           <WeekStrip weeks={profile.weeks ?? []} paused={profile.paused ?? []} n={16} />
           <Text style={{ color: t.muted }}>{total ? Math.round(((pc.photo + pc.verified) / total) * 100) : 0}% of your drop-offs have photo proof.</Text>
         </Card>
+        {/* Season recap (Req 9): a shareable story of the user's impact. */}
+        <Button title="See your season recap" kind="secondary" onPress={() => router.push('/recap')} />
         <Button title="Sign out" kind="secondary" onPress={() => signOut()} />
       </ScrollView>
     </SafeAreaView>
