@@ -21,7 +21,7 @@ import { aggregateByArea, MIN_USERS } from './privacy.js';
 
 const DAY = 86_400_000;
 const state = {
-  view: 'resident',
+  view: (typeof location !== 'undefined' && location.hash === '#partner') ? 'partner' : 'resident',
   onboarded: false,
   city: sampleUser.city,
   tab: 'home',
@@ -527,11 +527,6 @@ function makeMap(id, lat, lng, zoom) {
 /* ───────────────────────── boot ───────────────────────── */
 document.querySelectorAll('#viewSwitch button').forEach((b) =>
   b.onclick = () => { state.view = b.dataset.view; render(); });
-
-// Additive entry point: a link may open the demo straight on the partner
-// dashboard via the URL hash (e.g. prototype/#partner). No hash, or any other
-// hash, preserves the default resident-first behaviour.
-if (location.hash === '#partner') state.view = 'partner';
 
 setLocale(state.locale);
 render();
