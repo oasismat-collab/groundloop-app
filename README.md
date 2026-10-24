@@ -48,6 +48,30 @@ Links beside the embed open it full screen (`/prototype/`) and jump straight to 
 dashboard (`/prototype/#partner`). The prototype is a single self-contained page (Leaflet +
 OpenStreetMap, i18n, sample data) and makes no authenticated network calls.
 
+## View it on GitHub Pages
+
+The whole site is exported to static HTML so GitHub Pages can host it — no server needed.
+
+1. In the repo: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+2. Push to `feature/composting-tracker`. The [`deploy-pages`](.github/workflows/deploy-pages.yml)
+   workflow builds the static export and publishes it.
+3. The site goes live at **`https://<owner>.github.io/<repo>/`**
+   (e.g. `https://oasismat-collab.github.io/groundloop-app/`), with the embedded demo on the
+   home page and the standalone demo at `/<repo>/prototype/`.
+
+Build it yourself the same way the workflow does:
+
+```sh
+NEXT_PUBLIC_BASE_PATH=/groundloop-app npm run build   # outputs static site to out/
+```
+
+`npm run build` uses Next's static export (`output: 'export'` in `next.config.mjs`). Because
+Project Pages serve under `/<repo>`, the build sets `basePath`/`assetPrefix` from
+`NEXT_PUBLIC_BASE_PATH`; locally (no env var) the site still builds at `/`. The former
+`/api/usda` route was removed because API routes can't be statically hosted — the optional
+source-inspection links now point to the public FoodData Central records instead, and all
+displayed numbers already came from reviewed local seeds.
+
 ## USDA API
 
 Get a key from https://fdc.nal.usda.gov/api-key-signup/ and set `USDA_API_KEY` in `.env.local`. Never prefix it with `NEXT_PUBLIC_`. Restart the development server after changing environment variables.

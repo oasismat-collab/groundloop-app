@@ -13,6 +13,8 @@ import { calculateCompostImpact, type NutrientResults as NutrientResultsType } f
 import { saveCompostSession } from '@/lib/storage';
 import '../components/components.css';
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 function Sprout({ className = '' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 48 48" fill="none" aria-hidden="true">
@@ -158,11 +160,11 @@ export default function CompostTracker() {
   return (
     <>
       <header className="site-header">
-        <a className="brand" href="/">
+        <a className="brand" href={`${BASE}/`}>
           <Sprout />
           groundwork<span className="brand-dot">.</span>
         </a>
-        <a className="header-link" href="/#soil-story">
+        <a className="header-link" href={`${BASE}/#soil-story`}>
           Track your composting impact <span>↗</span>
         </a>
       </header>
@@ -302,7 +304,7 @@ export default function CompostTracker() {
       </main>
 
       <footer>
-        <a className="brand" href="/">
+        <a className="brand" href={`${BASE}/`}>
           <Sprout />
           groundwork.
         </a>
