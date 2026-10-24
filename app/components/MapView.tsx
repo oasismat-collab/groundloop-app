@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { REGIONS, type Site, type Region } from '@/lib/regions';
+import { REGIONS, type Site } from '@/lib/regions';
 
 // Fix for default marker icons in Leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -35,11 +35,11 @@ export default function MapView() {
   const sites = region?.sites || [];
 
   // Calculate center of all sites
-  const lat = sites.length > 0 
-    ? sites.reduce((a, s) => a + s.lat, 0) / sites.length 
+  const lat = sites.length > 0
+    ? sites.reduce((a, s) => a + s.lat, 0) / sites.length
     : 42.361;
-  const lng = sites.length > 0 
-    ? sites.reduce((a, s) => a + s.lng, 0) / sites.length 
+  const lng = sites.length > 0
+    ? sites.reduce((a, s) => a + s.lng, 0) / sites.length
     : -71.0655;
 
   const getDirections = (site: Site) => {
@@ -49,26 +49,25 @@ export default function MapView() {
 
   if (!mounted) {
     return (
-      <div className="w-full h-[600px] bg-gray-100 rounded-xl flex items-center justify-center">
-        <div className="text-gray-500">Loading map...</div>
+      <div className="gw-page">
+        <div className="gw-loading">Loading map…</div>
       </div>
     );
   }
 
+  // Cities with no drop-off sites (curbside / none) — explain the model instead.
   if (!sites.length) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <h2 className="text-3xl font-bold mb-4">{region.programme}</h2>
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-6 space-y-4">
-          <p className="text-lg">{region.summary}</p>
-          <p className="text-gray-600">{region.access}</p>
-          <a
-            href={region.source}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-green-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-green-700 transition-colors"
-          >
-            Official info →
+      <div className="gw-page">
+        <div className="gw-head">
+          <div className="gw-eyebrow"><span /> DROP-OFF LOCATIONS</div>
+          <h1>{region.programme}</h1>
+        </div>
+        <div className="gw-card pad gw-explainer">
+          <p className="big">{region.summary}</p>
+          <p className="muted">{region.access}</p>
+          <a className="gw-btn" href={region.source} target="_blank" rel="noopener noreferrer">
+            Official info <span aria-hidden="true">↗</span>
           </a>
         </div>
       </div>
@@ -76,25 +75,24 @@ export default function MapView() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      {/* Region selector */}
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold mb-4">Find Drop-Off Locations</h2>
-        <div className="flex flex-wrap gap-2">
+    <div className="gw-page">
+      <div className="gw-head">
+        <div className="gw-eyebrow"><span /> DROP-OFF LOCATIONS</div>
+        <h1>Find a place to <em>close the loop.</em></h1>
+        <p className="gw-sub">Pick your city to see nearby composting drop-off sites.</p>
+        <div className="gw-chips" role="tablist" aria-label="City">
           {Object.values(REGIONS)
-            .filter(r => r.sites.length > 0)
+            .filter((r) => r.sites.length > 0)
             .map((r) => (
               <button
                 key={r.id}
+                role="tab"
+                aria-selected={selectedRegion === r.id}
                 onClick={() => {
                   setSelectedRegion(r.id);
                   setSelectedSite(null);
                 }}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  selectedRegion === r.id
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`gw-chip${selectedRegion === r.id ? ' active' : ''}`}
               >
                 {r.name}
               </button>
@@ -102,114 +100,96 @@ export default function MapView() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="gw-maplayout">
         {/* Map */}
-        <div className="lg:col-span-2">
-          <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden">
-            <MapContainer
-              center={[lat, lng]}
-              zoom={13}
-              style={{ height: '600px', width: '100%' }}
-              scrollWheelZoom={true}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <RecenterMap lat={lat} lng={lng} />
-              {sites.map((site) => (
-                <Marker
-                  key={site.id}
-                  position={[site.lat, site.lng]}
-                  eventHandlers={{
-                    click: () => setSelectedSite(site),
-                  }}
-                >
-                  <Popup>
-                    <div className="p-2">
-                      <div className="font-bold text-lg">{site.label}</div>
-                      <div className="text-gray-600">{site.area}</div>
-                      {site.note && <div className="text-sm text-gray-500 mt-1">{site.note}</div>}
-                    </div>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </div>
+        <div className="gw-mapframe">
+          <MapContainer
+            center={[lat, lng]}
+            zoom={13}
+            style={{ height: '600px', width: '100%' }}
+            scrollWheelZoom={true}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <RecenterMap lat={lat} lng={lng} />
+            {sites.map((site) => (
+              <Marker
+                key={site.id}
+                position={[site.lat, site.lng]}
+                eventHandlers={{ click: () => setSelectedSite(site) }}
+              >
+                <Popup>
+                  <div style={{ padding: 2 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>{site.label}</div>
+                    <div style={{ color: '#687264', fontSize: 12 }}>{site.area}</div>
+                    {site.note && <div style={{ fontSize: 12, color: '#8a9079', marginTop: 4 }}>{site.note}</div>}
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
         </div>
 
         {/* Site list */}
-        <div className="lg:col-span-1">
-          <div className="bg-white border-2 border-gray-200 rounded-xl p-4">
-            <div className="mb-4">
-              <h3 className="font-bold text-xl mb-1">{region.programme}</h3>
-              <p className="text-sm text-gray-600">{region.name}</p>
-            </div>
-
-            {selectedSite && (
-              <div className="mb-6 p-4 bg-green-50 border-2 border-green-200 rounded-xl">
-                <div className="text-sm text-green-800 font-bold mb-1">{selectedSite.area}</div>
-                <div className="font-bold text-lg mb-1">{selectedSite.label}</div>
-                {selectedSite.note && <div className="text-sm text-gray-600 mb-3">{selectedSite.note}</div>}
-                <button
-                  onClick={() => getDirections(selectedSite)}
-                  className="w-full bg-green-600 text-white font-bold py-2 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  Get Directions
-                </button>
-              </div>
-            )}
-
-            <div className="text-sm font-bold text-gray-600 mb-2">All Sites ({sites.length})</div>
-            <div className="space-y-2 max-h-[480px] overflow-y-auto">
-              {sites.map((site) => (
-                <button
-                  key={site.id}
-                  onClick={() => setSelectedSite(site)}
-                  className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${
-                    selectedSite?.id === site.id
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-200 hover:border-green-300 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="font-bold text-sm">{site.label}</div>
-                  <div className="text-xs text-gray-600">{site.area}</div>
-                </button>
-              ))}
-            </div>
+        <aside className="gw-aside">
+          <div className="gw-aside-head">
+            <h3>{region.programme}</h3>
+            <p>{region.name}</p>
           </div>
-        </div>
+
+          {selectedSite && (
+            <div className="gw-selected">
+              <div className="area">{selectedSite.area}</div>
+              <div className="label">{selectedSite.label}</div>
+              {selectedSite.note && <div className="note">{selectedSite.note}</div>}
+              <button className="gw-btn block" onClick={() => getDirections(selectedSite)}>
+                Get directions <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+          )}
+
+          <div className="gw-listlabel">All sites ({sites.length})</div>
+          <div className="gw-sitelist">
+            {sites.map((site) => (
+              <button
+                key={site.id}
+                onClick={() => setSelectedSite(site)}
+                className={`gw-siterow${selectedSite?.id === site.id ? ' active' : ''}`}
+              >
+                <div className="name">{site.label}</div>
+                <div className="area">{site.area}</div>
+              </button>
+            ))}
+          </div>
+        </aside>
       </div>
 
       {/* Program info */}
-      <div className="mt-6 bg-white border-2 border-gray-200 rounded-xl p-6">
-        <h3 className="font-bold text-xl mb-4">About {region.programme}</h3>
-        <div className="grid md:grid-cols-2 gap-6">
+      <div className="gw-card pad gw-about">
+        <h3>About {region.programme}</h3>
+        <div className="gw-aboutgrid">
           <div>
-            <div className="text-sm font-bold text-green-600 mb-1">SUMMARY</div>
-            <p className="text-gray-700">{region.summary}</p>
+            <div className="k">Summary</div>
+            <p>{region.summary}</p>
           </div>
           <div>
-            <div className="text-sm font-bold text-green-600 mb-1">ACCESS</div>
-            <p className="text-gray-700">{region.access}</p>
+            <div className="k">Access</div>
+            <p>{region.access}</p>
           </div>
           <div>
-            <div className="text-sm font-bold text-green-600 mb-1">PROCESSOR</div>
-            <p className="text-gray-700">{region.processor}</p>
+            <div className="k">Processor</div>
+            <p>{region.processor}</p>
           </div>
           <div>
-            <div className="text-sm font-bold text-green-600 mb-1">TIP</div>
-            <p className="text-gray-700">{region.tip}</p>
+            <div className="k">Tip</div>
+            <p>{region.tip}</p>
           </div>
         </div>
-        <div className="mt-4">
-          <a
-            href={region.source}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-green-600 hover:text-green-700 font-medium"
-          >
-            Official program information →
+        <div style={{ marginTop: 18 }}>
+          <a className="gw-link" href={region.source} target="_blank" rel="noopener noreferrer">
+            Official program information ↗
           </a>
         </div>
       </div>
