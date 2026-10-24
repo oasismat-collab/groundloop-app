@@ -29,7 +29,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
   - [x] 5.3 `weeklyUpkeep` scheduled function (freezes, travel pauses) – _Req 5.3, 5.5_
   - [ ] 5.4 `retryPending` for drop-offs stuck in `pending` – _Design: error handling_
   - [ ] 5.5 Emulator tests with fixture photos (fresh, old EXIF, duplicate) – _Req 4.5, 4.6_
-  - [ ] 5.6 Script to generate `functions/src/regions.json` from `src/data/regions.ts`
+  - [x] 5.6 Script to generate `functions/src/regions.json` from `src/data/regions.ts`
 
 - [x] 6. Mascots
   - [x] 6.1 `components/Mascot.tsx` – Peel with 5 ripeness states, Bram, Cora – _Req 2, 6_

@@ -9,6 +9,7 @@
     "android": "expo run:android",
     "typecheck": "tsc --noEmit",
     "test": "jest",
+    "gen:regions": "tsx scripts/gen-regions.ts",
     "lint": "expo lint",
     "deploy:backend": "firebase deploy --only firestore,storage,functions"
   },
@@ -41,10 +42,13 @@
     "@types/react": "~18.3.12",
     "jest": "^29.7.0",
     "jest-expo": "~52.0.2",
+    "tsx": "^4.23.15",
     "typescript": "~5.3.3"
   },
   "jest": {
     "preset": "jest-expo",
-    "testMatch": ["<rootDir>/__tests__/**/*.test.ts"]
+    "testMatch": [
+      "<rootDir>/__tests__/**/*.test.ts"
+    ]
   }
 }
