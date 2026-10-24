@@ -25,14 +25,14 @@ export default function Check() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }}>
       <ScrollView contentContainerStyle={styles.wrap} keyboardShouldPersistTaps="handled">
-        <Text style={[styles.h1, { color: t.ink }]}>Can it go in?</Text>
+        <Text style={[styles.h1, { color: t.ink }]} accessibilityRole="header">Can it go in?</Text>
         <Text style={{ color: t.muted }}>{region.name} · {region.programme}</Text>
         <TextInput value={q} onChangeText={(s) => { setQ(s); setItem(null); }} placeholder="Type an item, e.g. tea bag" placeholderTextColor={t.muted}
           style={[styles.input, { color: t.ink, backgroundColor: t.card, borderColor: t.line }]} accessibilityLabel="Search for an item" />
         {item && v ? (
           <View style={[styles.answer, { backgroundColor: tone }]}>
             <Text style={{ color: t.muted }}>{item.emoji} {item.name}</Text>
-            <Text style={[styles.v, { color: t.ink }]}>{v.unverified ? 'Check locally.' : LABEL[v.verdict][0]}</Text>
+            <Text style={[styles.v, { color: t.ink }]} maxFontSizeMultiplier={1.6} accessibilityRole="header">{v.unverified ? 'Check locally.' : LABEL[v.verdict][0]}</Text>
             {item.options && option === undefined ? (
               <>
                 <Text style={{ color: t.ink }}>{item.question}</Text>

@@ -23,18 +23,18 @@ export default function You() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }}>
       <ScrollView contentContainerStyle={styles.wrap}>
-        <Text style={[styles.h1, { color: t.ink }]}>{profile.displayName || user.displayName || 'You'}</Text>
+        <Text style={[styles.h1, { color: t.ink }]} accessibilityRole="header">{profile.displayName || user.displayName || 'You'}</Text>
         <Text style={{ color: t.muted }}>{user.email}</Text>
         <Card>
           <Eyebrow>Where you compost</Eyebrow>
-          <Text style={{ color: t.ink }} onPress={() => router.push('/region?first=1')}>Home: {(profile.homeRegion && REGIONS[profile.homeRegion]?.name) || 'Choose your city'} ›</Text>
-          <Text style={{ color: t.ink }} onPress={() => router.push('/region')}>Right now: {(profile.currentRegion && REGIONS[profile.currentRegion]?.name) || 'Choose your city'} ›</Text>
+          <Text style={{ color: t.ink }} onPress={() => router.push('/region?first=1')} accessibilityRole="button" accessibilityHint="Change your home city">Home: {(profile.homeRegion && REGIONS[profile.homeRegion]?.name) || 'Choose your city'} ›</Text>
+          <Text style={{ color: t.ink }} onPress={() => router.push('/region')} accessibilityRole="button" accessibilityHint="Change your current city">Right now: {(profile.currentRegion && REGIONS[profile.currentRegion]?.name) || 'Choose your city'} ›</Text>
           <View style={styles.between}>
             <View style={{ flex: 1 }}>
               <Text style={{ color: t.ink, fontWeight: '700' }}>Travel mode</Text>
               <Text style={{ color: t.muted, fontSize: 13 }}>Pauses your streak while you can’t compost. Paused weeks don’t count and don’t break it.</Text>
             </View>
-            <Switch value={profile.travel} onValueChange={(v) => updateProfile(user.uid, { travel: v })} />
+            <Switch value={profile.travel} onValueChange={(v) => updateProfile(user.uid, { travel: v })} accessibilityLabel="Travel mode" accessibilityHint="Pauses your streak while you can’t compost" />
           </View>
           <Text style={{ color: t.ink }}>Streak freezes: {profile.freezes ?? 0} of 2</Text>
         </Card>

@@ -23,7 +23,7 @@ export default function SignIn() {
     <SafeAreaView style={[styles.wrap, { backgroundColor: t.bg }]}>
       <View style={styles.hero}>
         <Mascot id="peel" size={130} />
-        <Text style={[styles.title, { color: t.ink }]}>GroundLoop</Text>
+        <Text style={[styles.title, { color: t.ink }]} accessibilityRole="header">GroundLoop</Text>
         <Text style={[styles.sub, { color: t.muted }]}>Follow your food scraps back to the soil. Your weekly streak follows you everywhere.</Text>
       </View>
       <View style={styles.buttons}>

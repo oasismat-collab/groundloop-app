@@ -14,7 +14,12 @@ export function WeekStrip({ weeks, paused, n = 8 }: { weeks: string[]; paused: s
     return { k, done: done.has(k), paused: pz.has(k), current: i === n - 1 };
   });
   return (
-    <View style={styles.row} accessibilityLabel={`${cells.filter((c) => c.done).length} of the last ${n} weeks composted`}>
+    <View
+      style={styles.row}
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={`${cells.filter((c) => c.done).length} of the last ${n} weeks composted${cells.filter((c) => c.paused).length ? `, ${cells.filter((c) => c.paused).length} paused for travel` : ''}`}
+    >
       {cells.map((c) => (
         <View
           key={c.k}

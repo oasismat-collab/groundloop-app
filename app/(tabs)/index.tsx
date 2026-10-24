@@ -30,12 +30,20 @@ export default function Home() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }}>
       <ScrollView contentContainerStyle={styles.wrap}>
-        <Text style={[styles.h1, { color: t.ink }]}>Hi, {first}</Text>
-        <Text style={{ color: t.muted }} onPress={() => router.push('/region')}>{region.name} · {region.programme} ›</Text>
+        <Text style={[styles.h1, { color: t.ink }]} accessibilityRole="header">Hi, {first}</Text>
+        <Text
+          style={{ color: t.muted }}
+          onPress={() => router.push('/region')}
+          accessibilityRole="button"
+          accessibilityHint="Change your current city"
+          accessibilityLabel={`Current city: ${region.name}, ${region.programme}`}
+        >
+          {region.name} · {region.programme} ›
+        </Text>
         {away && <Card style={{ backgroundColor: t.bananaSoft }}><Text style={{ color: t.ink }}>You’re in {region.name}. Your streak travels with you.</Text></Card>}
         <Card>
           <Eyebrow>Weekly streak</Eyebrow>
-          <Text style={[styles.big, { color: t.ink }]}>{st.count} <Text style={{ fontSize: 16, color: t.muted }}>week{st.count === 1 ? '' : 's'}</Text></Text>
+          <Text style={[styles.big, { color: t.ink }]} maxFontSizeMultiplier={1.6} accessibilityLabel={`Weekly streak: ${st.count} week${st.count === 1 ? '' : 's'}`}>{st.count} <Text style={{ fontSize: 16, color: t.muted }}>week{st.count === 1 ? '' : 's'}</Text></Text>
           <WeekStrip weeks={profile.weeks ?? []} paused={profile.paused ?? []} />
           <Text style={{ color: t.muted }}>{msg}</Text>
         </Card>
