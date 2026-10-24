@@ -21,7 +21,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
 
 - [x] 4. Security rules
   - [x] 4.1 `firestore.rules` and `storage.rules` – _Req 4.8, 7.3_
-  - [ ] 4.2 Rules unit tests with `@firebase/rules-unit-testing` – _Req 4.8_
+  - [x] 4.2 Rules unit tests with `@firebase/rules-unit-testing` – _Req 4.8_
 
 - [x] 5. Cloud Functions
   - [x] 5.1 `verifyDropoff` (photo freshness, perceptual hash, geofence, seeds, weeks, member summary) – _Req 4.4–4.7, 5.1, 5.4_
@@ -41,7 +41,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
 
 - [ ] 8. Log flow (`app/log.tsx`) – started
   - [x] 8.1 Site picker, camera capture, one-shot location, careful checkbox, submit – _Req 4.1–4.3_
-  - [ ] 8.2 Listen for the verified result and show seeds, proof level, badges and revived Peel – _Req 4.7, 6.2_
+  - [x] 8.2 Listen for the verified result and show seeds, proof level, badges and revived Peel – _Req 4.7, 6.2_
   - [x] 8.3 Offline: show "Saved. We'll verify it when you're back online." – _Design_
 
 - [x] 9. Map tab
