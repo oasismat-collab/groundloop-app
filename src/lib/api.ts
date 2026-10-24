@@ -89,6 +89,25 @@ export function watchDropoff(uid: string, id: string, cb: (d: Record<string, unk
   return onSnapshot(doc(db, 'users', uid, 'dropoffs', id), (s) => s.exists() && cb(s.data()));
 }
 
+/** One finalised (or pending) drop-off, for the history list (Req 4). */
+export interface DropoffRecord {
+  id: string;
+  createdAt: number;
+  region: string;
+  siteLabel: string;
+  careful?: boolean;
+  photoPath?: string;
+  status?: string;
+  proofLevel?: ProofLevel;
+  seedsAwarded?: number;
+}
+
+/** The user's drop-off history, newest first. */
+export function watchDropoffs(uid: string, cb: (items: DropoffRecord[]) => void): Unsubscribe {
+  const q = query(collection(db, 'users', uid, 'dropoffs'), orderBy('createdAt', 'desc'), limit(100));
+  return onSnapshot(q, (s) => cb(s.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<DropoffRecord, 'id'>) }))));
+}
+
 export function watchFeed(region: string | null, cb: (posts: Array<Record<string, unknown> & { id: string }>) => void): Unsubscribe {
   const base = collection(db, 'posts');
   const q = region ? query(base, where('region', '==', region), orderBy('createdAt', 'desc'), limit(50)) : query(base, orderBy('createdAt', 'desc'), limit(50));
