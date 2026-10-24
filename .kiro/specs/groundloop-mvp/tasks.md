@@ -57,4 +57,6 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
 - [x] 13. Host-a-bin form (You tab → "Offer a space") – _Req 8.2_
 - [x] 14. Recap stories with share-as-image (`react-native-view-shot` + `expo-sharing`) – _Req 9_
 - [ ] 15. Accessibility pass – labels, dynamic type, contrast in dark mode – _All_
-- [ ] 16. EAS build profiles and store listings (privacy labels: location at check-in only, photos user-initiated) – _All_
+- [x] 16. EAS build profiles and store listings (privacy labels: location at check-in only, photos user-initiated) – _All_
+  - Config done in-repo: EAS build/submit profiles (`eas.json`), iOS privacy manifest (`app.config.ts`), listing + privacy-label metadata (`store/`).
+  - Submitting the listings and entering the privacy labels in App Store Connect / Google Play needs Apple/Google accounts and must be done in those consoles using `store/`.
