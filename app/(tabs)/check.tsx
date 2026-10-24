@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProfile } from '../../src/hooks/useProfile';
 import { REGIONS } from '../../src/data/regions';
 import { searchItems, verdictFor } from '../../src/lib/verdict';
+import { recordCheck } from '../../src/lib/checked';
 import type { Item } from '../../src/data/items';
 import { Button } from '../../src/components/ui';
 import { useTheme } from '../../src/theme';
@@ -45,7 +46,7 @@ export default function Check() {
         ) : (
           <View style={styles.grid}>
             {searchItems(q).map((i) => (
-              <Pressable key={i.name} onPress={() => { setItem(i); setOption(undefined); }} style={[styles.tile, { backgroundColor: t.card, borderColor: t.line }]} accessibilityRole="button">
+              <Pressable key={i.name} onPress={() => { setItem(i); setOption(undefined); recordCheck(i.name); }} style={[styles.tile, { backgroundColor: t.card, borderColor: t.line }]} accessibilityRole="button">
                 <Text style={{ fontSize: 28 }}>{i.emoji}</Text>
                 <Text style={{ color: t.ink, textAlign: 'center', fontSize: 13, fontWeight: '600' }}>{i.name}</Text>
               </Pressable>

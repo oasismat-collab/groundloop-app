@@ -17,6 +17,42 @@ const config: ExpoConfig = {
       NSCameraUsageDescription: 'Take a photo of your food scraps going in, as proof of your drop-off.',
       NSLocationWhenInUseUsageDescription: 'Check you are at the drop-off site when you log a drop-off. GroundLoop never tracks you in the background.',
     },
+    // App privacy manifest (the config form of the App Store privacy labels):
+    // location is read only at check-in, photos are user-initiated, and we do
+    // NOT track users across apps (no NSPrivacyTracking). See store/ for the
+    // console answers these mirror.
+    privacyManifests: {
+      NSPrivacyTracking: false,
+      NSPrivacyTrackingDomains: [],
+      NSPrivacyCollectedDataTypes: [
+        {
+          // Precise location, used only to verify a drop-off at check-in.
+          NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypePreciseLocation',
+          NSPrivacyCollectedDataTypeLinked: true,
+          NSPrivacyCollectedDataTypeTracking: false,
+          NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
+        },
+        {
+          // Proof photos, taken by the user when they log a drop-off.
+          NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypePhotosorVideos',
+          NSPrivacyCollectedDataTypeLinked: true,
+          NSPrivacyCollectedDataTypeTracking: false,
+          NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
+        },
+      ],
+      NSPrivacyAccessedAPITypes: [
+        {
+          // AsyncStorage (UserDefaults-backed) for session and local settings.
+          NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
+          NSPrivacyAccessedAPITypeReasons: ['CA92.1'],
+        },
+        {
+          // File timestamps used by React Native / Expo internals.
+          NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
+          NSPrivacyAccessedAPITypeReasons: ['C617.1'],
+        },
+      ],
+    },
   },
   android: {
     package: env.ANDROID_PACKAGE ?? 'com.example.groundloop',
