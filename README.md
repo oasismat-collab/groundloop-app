@@ -7,7 +7,8 @@ GroundLoop helps people sort food scraps correctly for their city, find where to
 - 📱 **App:** Expo (React Native) + TypeScript, Google and Apple sign-in
 - 🔥 **Backend:** Firebase Auth, Firestore, Storage, Cloud Functions
 - 🧭 **Built with Kiro:** steering and specs in [`.kiro/`](.kiro)
-- 🖥️ **Browser demo (no install, no login):** [`docs/prototype/index.html`](docs/prototype/index.html) — a single static page (Leaflet + OpenStreetMap, i18n, sample data). Published with GitHub Pages at **`https://<owner>.github.io/<repo>/prototype/`**. Reuses the app's real logic (`src/lib`, `src/data`); spec in [`.kiro/specs/web-demo`](.kiro/specs/web-demo).
+- 🖥️ **Company website:** [`docs/index.html`](docs/index.html) — a self-contained marketing landing page served by GitHub Pages at the repo root **`https://<owner>.github.io/<repo>/`**. Matches the app's look (tokens + mascots), routes residents to the demo and partners to the dashboard, and carries the privacy promise ([`docs/privacy.html`](docs/privacy.html)). Spec in [`.kiro/specs/company-website`](.kiro/specs/company-website).
+- 🖥 **Browser demo (no install, no login):** [`docs/prototype/index.html`](docs/prototype/index.html) — a single static page (Leaflet + OpenStreetMap, i18n, sample data). Published with GitHub Pages at **`https://<owner>.github.io/<repo>/prototype/`** (open the partner dashboard directly with `prototype/#partner`). Reuses the app's real logic (`src/lib`, `src/data`); spec in [`.kiro/specs/web-demo`](.kiro/specs/web-demo).
 
 ## What's in the box
 
