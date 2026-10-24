@@ -15,7 +15,7 @@ export function concentration(m:Material,e:Element) { const c=freshGrams(e==='N'
 export function calculate(input:Interpretation,process:Process) {
  const selected=components(input.food,input.part); const defaultMass=selected.reduce((s,m)=>s+m.portionG,0);
  const rows=selected.map(m=>({material:m,mass:input.mass*m.portionG/defaultMass}));
- const sum=(fn:(m:Material,mass:number)=>number|null)=>{const values=rows.map(r=>fn(r.material,r.mass));return values.some(v=>v===null)?null:(values as number[]).reduce((a,b)=>a+b,0);};
+ const sum=(fn:(m:Material,mass:number)=>number|null)=>{const values=rows.map(r=>fn(r.material,r.mass)).filter((v):v is number=>v!==null);return values.length===0?null:values.reduce((a,b)=>a+b,0);};
  return { rows, organicMatter:sum((m,w)=>returned(w,freshGrams(m.organicMatter,m.moisture),process.organicMatter,process.applied)),carbon:sum((m,w)=>returned(w,freshGrams(m.organicCarbon,m.moisture),process.carbon,process.applied)),nutrients:Object.fromEntries(elements.map(e=>[e,sum((m,w)=>returned(w,concentration(m,e),process.retention[e],process.applied))])) as Record<Element,number|null>, inputNutrients:Object.fromEntries(elements.map(e=>[e,sum((m,w)=>{const c=concentration(m,e);return c===null?null:w*c;})])) as Record<Element,number|null> };
 }
 export function formatMass(g:number|null) { if(g===null)return 'Not yet quantified';if(g===0)return '0 mg';return g<1?`roughly ${Number((g*1000).toPrecision(2))} mg`:`roughly ${Number(g.toPrecision(2))} g`; }
