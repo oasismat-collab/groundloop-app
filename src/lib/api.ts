@@ -1,0 +1,98 @@
+import { doc, getDoc, setDoc, updateDoc, addDoc, collection, onSnapshot, query, orderBy, limit, where, serverTimestamp, type Unsubscribe } from 'firebase/firestore';
+import { ref, uploadBytes } from 'firebase/storage';
+import { db, storage } from './firebase';
+import { coarse } from './geo';
+
+export interface Profile {
+  displayName: string;
+  homeRegion: string;
+  currentRegion: string;
+  travel: boolean;
+  usualSite?: { region: string; siteId: string };
+  tz?: string;
+  // written by Cloud Functions only
+  seeds?: number;
+  weeks?: string[];
+  paused?: string[];
+  freezes?: number;
+  best?: number;
+  lastDropAt?: number;
+  proofCounts?: { self: number; photo: number; verified: number };
+}
+
+export type ProofLevel = 'self' | 'photo' | 'verified' | 'partner';
+
+export async function ensureProfile(uid: string, displayName: string): Promise<{ created: boolean }> {
+  const r = doc(db, 'users', uid);
+  const snap = await getDoc(r);
+  if (snap.exists()) return { created: false };
+  await setDoc(r, {
+    displayName,
+    homeRegion: 'boston',
+    currentRegion: 'boston',
+    travel: false,
+    tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    createdAt: serverTimestamp(),
+  });
+  return { created: true };
+}
+
+export function watchProfile(uid: string, cb: (p: Profile | null) => void): Unsubscribe {
+  return onSnapshot(doc(db, 'users', uid), (s) => cb(s.exists() ? (s.data() as Profile) : null));
+}
+
+export const updateProfile = (uid: string, patch: Partial<Pick<Profile, 'homeRegion' | 'currentRegion' | 'travel' | 'usualSite' | 'displayName'>>) =>
+  updateDoc(doc(db, 'users', uid), patch);
+
+export interface NewDropoff {
+  region: string;
+  siteId?: string;
+  siteLabel: string;
+  geo?: { lat: number; lng: number; accuracy: number };
+  photoUri?: string;
+  careful: boolean;
+}
+
+/** Creates a pending drop-off; Cloud Function `verifyDropoff` assigns the proof level. */
+export async function submitDropoff(uid: string, d: NewDropoff): Promise<string> {
+  const ref0 = doc(collection(db, 'users', uid, 'dropoffs'));
+  let photoPath: string | undefined;
+  if (d.photoUri) {
+    photoPath = `proofs/${uid}/${ref0.id}.jpg`;
+    const blob = await (await fetch(d.photoUri)).blob();
+    await uploadBytes(ref(storage, photoPath), blob, { contentType: 'image/jpeg' });
+  }
+  await setDoc(ref0, {
+    createdAt: Date.now(),
+    region: d.region,
+    siteLabel: d.siteLabel,
+    careful: d.careful,
+    tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    status: 'pending',
+    ...(d.siteId ? { siteId: d.siteId } : {}),
+    ...(d.geo ? { geo: d.geo } : {}),
+    ...(photoPath ? { photoPath } : {}),
+  });
+  return ref0.id;
+}
+
+export function watchDropoff(uid: string, id: string, cb: (d: Record<string, unknown>) => void): Unsubscribe {
+  return onSnapshot(doc(db, 'users', uid, 'dropoffs', id), (s) => s.exists() && cb(s.data()));
+}
+
+export function watchFeed(region: string | null, cb: (posts: Array<Record<string, unknown> & { id: string }>) => void): Unsubscribe {
+  const base = collection(db, 'posts');
+  const q = region ? query(base, where('region', '==', region), orderBy('createdAt', 'desc'), limit(50)) : query(base, orderBy('createdAt', 'desc'), limit(50));
+  return onSnapshot(q, (s) => cb(s.docs.map((d) => ({ id: d.id, ...d.data() }))));
+}
+
+export const createPost = (uid: string, kind: string, text: string, region: string, photoPath?: string) =>
+  addDoc(collection(db, 'posts'), { uid, kind, text: text.slice(0, 280), region, createdAt: Date.now(), ...(photoPath ? { photoPath } : {}) });
+
+export const cheer = (postId: string, uid: string) => setDoc(doc(db, 'posts', postId, 'cheers', uid), { createdAt: Date.now() });
+
+export const suggestSite = (uid: string, region: string, lat: number, lng: number, note = '') =>
+  addDoc(collection(db, 'siteRequests'), { uid, region, lat: coarse(lat), lng: coarse(lng), note: note.slice(0, 120), createdAt: Date.now() });
+
+export const offerHost = (uid: string, region: string, name: string, type: string, address: string) =>
+  addDoc(collection(db, 'hostOffers'), { uid, region, name, type, address, status: 'Under review', createdAt: Date.now() });

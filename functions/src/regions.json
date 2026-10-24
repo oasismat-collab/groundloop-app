@@ -1,0 +1,244 @@
+{
+ "boston": {
+  "kind": "drop",
+  "sites": [
+   {
+    "id": "boston-1",
+    "lat": 42.361,
+    "lng": -71.0655
+   },
+   {
+    "id": "boston-2",
+    "lat": 42.3563,
+    "lng": -71.1618
+   },
+   {
+    "id": "boston-3",
+    "lat": 42.3553,
+    "lng": -71.1395
+   },
+   {
+    "id": "boston-4",
+    "lat": 42.3417,
+    "lng": -71.153
+   },
+   {
+    "id": "boston-5",
+    "lat": 42.3752,
+    "lng": -71.0662
+   },
+   {
+    "id": "boston-6",
+    "lat": 42.3482,
+    "lng": -71.0607
+   },
+   {
+    "id": "boston-7",
+    "lat": 42.3603,
+    "lng": -71.058
+   },
+   {
+    "id": "boston-8",
+    "lat": 42.2905,
+    "lng": -71.0713
+   },
+   {
+    "id": "boston-9",
+    "lat": 42.382,
+    "lng": -71.026
+   },
+   {
+    "id": "boston-10",
+    "lat": 42.3446,
+    "lng": -71.096
+   },
+   {
+    "id": "boston-11",
+    "lat": 42.2585,
+    "lng": -71.1213
+   },
+   {
+    "id": "boston-12",
+    "lat": 42.3095,
+    "lng": -71.1148
+   },
+   {
+    "id": "boston-13",
+    "lat": 42.3196,
+    "lng": -71.1095
+   },
+   {
+    "id": "boston-14",
+    "lat": 42.3321,
+    "lng": -71.0995
+   },
+   {
+    "id": "boston-15",
+    "lat": 42.3656,
+    "lng": -71.0546
+   },
+   {
+    "id": "boston-16",
+    "lat": 42.2868,
+    "lng": -71.1287
+   },
+   {
+    "id": "boston-17",
+    "lat": 42.316,
+    "lng": -71.0984
+   },
+   {
+    "id": "boston-18",
+    "lat": 42.3365,
+    "lng": -71.0477
+   },
+   {
+    "id": "boston-19",
+    "lat": 42.3419,
+    "lng": -71.077
+   },
+   {
+    "id": "boston-20",
+    "lat": 42.3672,
+    "lng": -71.0605
+   }
+  ]
+ },
+ "cambridge": {
+  "kind": "drop",
+  "sites": [
+   {
+    "id": "cambridge-1",
+    "lat": 42.3727,
+    "lng": -71.0758
+   },
+   {
+    "id": "cambridge-2",
+    "lat": 42.36,
+    "lng": -71.115
+   },
+   {
+    "id": "cambridge-3",
+    "lat": 42.3888,
+    "lng": -71.1395
+   },
+   {
+    "id": "cambridge-4",
+    "lat": 42.368,
+    "lng": -71.0975
+   },
+   {
+    "id": "cambridge-5",
+    "lat": 42.3707,
+    "lng": -71.0822
+   },
+   {
+    "id": "cambridge-6",
+    "lat": 42.3903,
+    "lng": -71.1288
+   }
+  ]
+ },
+ "brookline": {
+  "kind": "drop",
+  "sites": [
+   {
+    "id": "brookline-1",
+    "lat": 42.3337,
+    "lng": -71.1203
+   },
+   {
+    "id": "brookline-2",
+    "lat": 42.3333,
+    "lng": -71.1163
+   },
+   {
+    "id": "brookline-3",
+    "lat": 42.3217,
+    "lng": -71.1625
+   },
+   {
+    "id": "brookline-4",
+    "lat": 42.3357,
+    "lng": -71.1478
+   },
+   {
+    "id": "brookline-5",
+    "lat": 42.3396,
+    "lng": -71.1318
+   },
+   {
+    "id": "brookline-6",
+    "lat": 42.3115,
+    "lng": -71.159
+   }
+  ]
+ },
+ "newton": {
+  "kind": "drop",
+  "sites": [
+   {
+    "id": "newton-1",
+    "lat": 42.364,
+    "lng": -71.2165
+   },
+   {
+    "id": "newton-2",
+    "lat": 42.3527,
+    "lng": -71.2105
+   },
+   {
+    "id": "newton-3",
+    "lat": 42.337,
+    "lng": -71.2085
+   },
+   {
+    "id": "newton-4",
+    "lat": 42.3035,
+    "lng": -71.198
+   }
+  ]
+ },
+ "somerville": {
+  "kind": "curb",
+  "sites": []
+ },
+ "worcester": {
+  "kind": "none",
+  "sites": [
+   {
+    "id": "worcester-1",
+    "lat": 42.2398,
+    "lng": -71.7865
+   }
+  ]
+ },
+ "camden": {
+  "kind": "curb",
+  "sites": []
+ },
+ "wandsworth": {
+  "kind": "curb",
+  "sites": []
+ },
+ "nagai": {
+  "kind": "station",
+  "sites": []
+ },
+ "oki": {
+  "kind": "curb",
+  "sites": []
+ },
+ "inagi": {
+  "kind": "none",
+  "sites": []
+ },
+ "seoul": {
+  "kind": "rfid",
+  "sites": []
+ },
+ "toronto": {
+  "kind": "curb",
+  "sites": []
+ }
+}

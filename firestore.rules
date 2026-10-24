@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    function onlyKeys(keys) { return request.resource.data.keys().hasOnly(keys); }
+    function unchanged(keys) { return !request.resource.data.diff(resource.data).affectedKeys().hasAny(keys); }
+    function isPartner() { return signedIn() && request.auth.token.role == 'partner'; }
+
+    // Private profile. Trusted fields (seeds, weeks, streak ...) are written only by Cloud Functions.
+    match /users/{uid} {
+      allow read: if isMe(uid);
+      allow create: if isMe(uid)
+        && onlyKeys(['displayName', 'homeRegion', 'currentRegion', 'travel', 'usualSite', 'homeGeo', 'tz', 'createdAt']);
+      allow update: if isMe(uid)
+        && unchanged(['seeds', 'weeks', 'paused', 'freezes', 'best', 'lastDropAt', 'photoHashes', 'proofCounts']);
+
+      match /dropoffs/{id} {
+        allow read: if isMe(uid);
+        allow create: if isMe(uid)
+          && onlyKeys(['createdAt', 'region', 'siteId', 'siteLabel', 'geo', 'photoPath', 'careful', 'tz', 'status'])
+          && request.resource.data.status == 'pending';
+        allow update, delete: if false; // finalised by verifyDropoff only
+      }
+    }
+
+    // Public summary, written by functions only.
+    match /members/{uid} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /posts/{postId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && onlyKeys(['uid', 'kind', 'text', 'region', 'photoPath', 'createdAt'])
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 280
+        && request.resource.data.kind in ['Reflection', 'Tip', 'Question', 'Milestone'];
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow update: if false;
+
+      match /cheers/{uid} {
+        allow read: if signedIn();
+        allow create: if isMe(uid)
+          && get(/databases/$(database)/documents/posts/$(postId)).data.uid != uid;
+        allow delete: if isMe(uid);
+      }
+    }
+
+    match /reports/{id} {
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow read: if isPartner();
+    }
+
+    match /siteRequests/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && onlyKeys(['uid', 'region', 'lat', 'lng', 'note', 'createdAt'])
+        && request.resource.data.note.size() <= 120;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /hostOffers/{id} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isPartner());
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'Under review';
+      allow update: if isPartner() && onlyKeys(['uid', 'region', 'name', 'type', 'address', 'status', 'createdAt', 'reviewedBy', 'reviewedAt']);
+    }
+  }
+}

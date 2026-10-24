@@ -1,0 +1,493 @@
+/* City food-waste programmes. Every entry links its official source. Coordinates are approximate. */
+export type RegionKind = 'drop' | 'curb' | 'station' | 'rfid' | 'none';
+export interface Site { id: string; area: string; label: string; note: string; lat: number; lng: number }
+export interface Region { id: string; country: string; name: string; programme: string; kind: RegionKind; rules: 'full' | 'basic'; summary: string; access: string; processor: string; tip: string; source: string; signup?: string; sites: Site[] }
+
+export const REGIONS: Record<string, Region> = {
+  "boston": {
+    "id": "boston",
+    "country": "United States",
+    "name": "Boston",
+    "programme": "Project Oscar",
+    "kind": "drop",
+    "rules": "full",
+    "summary": "Free 24/7 neighbourhood food-scrap bins",
+    "access": "Bins are locked. The City posts the lock code on its website: 2-1-4.",
+    "processor": "Black Earth Compost empties the bins and composts the scraps at its sites in Manchester, Groton and Framingham, MA. The compost is sold to garden centres, farmers and gardeners.",
+    "tip": "Boston also takes certified compostable serviceware (BPI, TUV, OK Compost or CMA logo) and cooled ash tied off in a bag.",
+    "source": "https://www.boston.gov/departments/public-works/project-oscar",
+    "sites": [
+      {
+        "id": "boston-1",
+        "area": "Beacon Hill",
+        "label": "200 Cambridge St",
+        "note": "Next to the fire station",
+        "lat": 42.361,
+        "lng": -71.0655
+      },
+      {
+        "id": "boston-2",
+        "area": "Brighton",
+        "label": "Faneuil Gardens Apartments",
+        "note": "West parking lot, across from McKinney Playground",
+        "lat": 42.3563,
+        "lng": -71.1618
+      },
+      {
+        "id": "boston-3",
+        "area": "Brighton",
+        "label": "Boston Green Academy, 678 Cambridge St",
+        "note": "School parking lot off Cambridge St",
+        "lat": 42.3553,
+        "lng": -71.1395
+      },
+      {
+        "id": "boston-4",
+        "area": "Brighton",
+        "label": "1825 Commonwealth Ave",
+        "note": "Shubow Park, at Chiswick Rd",
+        "lat": 42.3417,
+        "lng": -71.153
+      },
+      {
+        "id": "boston-5",
+        "area": "Charlestown",
+        "label": "31 Austin St",
+        "note": "Parking lot of the 99 Restaurant",
+        "lat": 42.3752,
+        "lng": -71.0662
+      },
+      {
+        "id": "boston-6",
+        "area": "Chinatown",
+        "label": "Tai Tung Village, 240 Hudson St",
+        "note": "",
+        "lat": 42.3482,
+        "lng": -71.0607
+      },
+      {
+        "id": "boston-7",
+        "area": "Downtown",
+        "label": "City Hall Plaza, 1 City Hall Sq",
+        "note": "",
+        "lat": 42.3603,
+        "lng": -71.058
+      },
+      {
+        "id": "boston-8",
+        "area": "Dorchester",
+        "label": "Codman Square Library, 690 Washington St",
+        "note": "",
+        "lat": 42.2905,
+        "lng": -71.0713
+      },
+      {
+        "id": "boston-9",
+        "area": "East Boston",
+        "label": "Memorial Stadium Park",
+        "note": "Next to the playground on Thompson Dr",
+        "lat": 42.382,
+        "lng": -71.026
+      },
+      {
+        "id": "boston-10",
+        "area": "Fenway",
+        "label": "New Edgerly Plaza",
+        "note": "In front of Whole Foods",
+        "lat": 42.3446,
+        "lng": -71.096
+      },
+      {
+        "id": "boston-11",
+        "area": "Hyde Park",
+        "label": "1234 Hyde Park Ave",
+        "note": "Next to the parking lot",
+        "lat": 42.2585,
+        "lng": -71.1213
+      },
+      {
+        "id": "boston-12",
+        "area": "Jamaica Plain",
+        "label": "Curtis Hall, 20 South St",
+        "note": "Community center parking lot",
+        "lat": 42.3095,
+        "lng": -71.1148
+      },
+      {
+        "id": "boston-13",
+        "area": "Jamaica Plain",
+        "label": "490 Centre St",
+        "note": "Municipal parking lot",
+        "lat": 42.3196,
+        "lng": -71.1095
+      },
+      {
+        "id": "boston-14",
+        "area": "Mission Hill",
+        "label": "Tobin Community Center, 1481 Tremont St",
+        "note": "End of the driveway",
+        "lat": 42.3321,
+        "lng": -71.0995
+      },
+      {
+        "id": "boston-15",
+        "area": "North End",
+        "label": "Nazzaro Center, 30 North Bennet St",
+        "note": "Parking lot",
+        "lat": 42.3656,
+        "lng": -71.0546
+      },
+      {
+        "id": "boston-16",
+        "area": "Roslindale",
+        "label": "4210 Washington St",
+        "note": "",
+        "lat": 42.2868,
+        "lng": -71.1287
+      },
+      {
+        "id": "boston-17",
+        "area": "Roxbury",
+        "label": "3042 Washington St",
+        "note": "Municipal Lot 33",
+        "lat": 42.316,
+        "lng": -71.0984
+      },
+      {
+        "id": "boston-18",
+        "area": "South Boston",
+        "label": "450 West Broadway",
+        "note": "",
+        "lat": 42.3365,
+        "lng": -71.0477
+      },
+      {
+        "id": "boston-19",
+        "area": "South End",
+        "label": "South End Library, 685 Tremont St",
+        "note": "",
+        "lat": 42.3419,
+        "lng": -71.077
+      },
+      {
+        "id": "boston-20",
+        "area": "West End",
+        "label": "Causeway St and Lovejoy Wharf",
+        "note": "",
+        "lat": 42.3672,
+        "lng": -71.0605
+      }
+    ]
+  },
+  "cambridge": {
+    "id": "cambridge",
+    "country": "United States",
+    "name": "Cambridge",
+    "programme": "Cambridge Curbside Composting",
+    "kind": "drop",
+    "rules": "full",
+    "summary": "Weekly curbside pickup plus six 24/7 drop-off sites",
+    "access": "Drop-off carts are open 24 hours. Free kitchen bins from the Department of Public Works.",
+    "processor": "Run by the City of Cambridge Department of Public Works.",
+    "tip": "Drop-off sites take food scraps only. If you carry scraps in a plastic bag, empty them into the cart and put the bag in the trash.",
+    "source": "https://cambridgema.gov/Services/curbsidecomposting/compostdropoff",
+    "sites": [
+      {
+        "id": "cambridge-1",
+        "area": "East Cambridge",
+        "label": "Cambridge Crossing",
+        "note": "Across from 10 Education Circle",
+        "lat": 42.3727,
+        "lng": -71.0758
+      },
+      {
+        "id": "cambridge-2",
+        "area": "Riverside",
+        "label": "Moore Youth Center, 12 Gilmore St",
+        "note": "",
+        "lat": 42.36,
+        "lng": -71.115
+      },
+      {
+        "id": "cambridge-3",
+        "area": "Neighborhood Nine",
+        "label": "Danehy Park",
+        "note": "New Street parking lot",
+        "lat": 42.3888,
+        "lng": -71.1395
+      },
+      {
+        "id": "cambridge-4",
+        "area": "Wellington-Harrington",
+        "label": "Cambridge Public Works",
+        "note": "Across from 288 Norfolk St",
+        "lat": 42.368,
+        "lng": -71.0975
+      },
+      {
+        "id": "cambridge-5",
+        "area": "East Cambridge",
+        "label": "Kennedy-Longfellow School, 104 Fulkerson St",
+        "note": "",
+        "lat": 42.3707,
+        "lng": -71.0822
+      },
+      {
+        "id": "cambridge-6",
+        "area": "North Cambridge",
+        "label": "Peabody School",
+        "note": "Across from 62 Haskell St",
+        "lat": 42.3903,
+        "lng": -71.1288
+      }
+    ]
+  },
+  "brookline": {
+    "id": "brookline",
+    "country": "United States",
+    "name": "Brookline",
+    "programme": "Brookline Food Waste Drop-Off",
+    "kind": "drop",
+    "rules": "full",
+    "summary": "Six free 24/7 drop-off bins for residents",
+    "access": "Register once for free and you get one lock code for every bin. Residents only.",
+    "processor": "Black Earth Compost services the bins. The finished compost is sold at local garden centres and nurseries.",
+    "tip": "Brookline also takes certified compostable serviceware, wine corks, wooden chopsticks and toothpicks. No plastic bags in the bins.",
+    "source": "https://www.brooklinema.gov/FoodWasteDropOff",
+    "sites": [
+      {
+        "id": "brookline-1",
+        "area": "Coolidge Corner area",
+        "label": "John Street Parking Lot, 37 John St",
+        "note": "",
+        "lat": 42.3337,
+        "lng": -71.1203
+      },
+      {
+        "id": "brookline-2",
+        "area": "Brookline Village",
+        "label": "Brookline Teen Center, 40 Aspinwall Ave",
+        "note": "",
+        "lat": 42.3333,
+        "lng": -71.1163
+      },
+      {
+        "id": "brookline-3",
+        "area": "Chestnut Hill",
+        "label": "Eliot Recreation Center, 133 Eliot St",
+        "note": "",
+        "lat": 42.3217,
+        "lng": -71.1625
+      },
+      {
+        "id": "brookline-4",
+        "area": "Washington Square",
+        "label": "Beacon St and Tappan St",
+        "note": "Southwest corner",
+        "lat": 42.3357,
+        "lng": -71.1478
+      },
+      {
+        "id": "brookline-5",
+        "area": "St. Mary’s",
+        "label": "Beacon St and Lancaster Terrace",
+        "note": "Northwest corner",
+        "lat": 42.3396,
+        "lng": -71.1318
+      },
+      {
+        "id": "brookline-6",
+        "area": "South Brookline",
+        "label": "Putterham Library, 959 W. Roxbury Pkwy",
+        "note": "",
+        "lat": 42.3115,
+        "lng": -71.159
+      }
+    ]
+  },
+  "newton": {
+    "id": "newton",
+    "country": "United States",
+    "name": "Newton",
+    "programme": "Newton Organics Drop-Off",
+    "kind": "drop",
+    "rules": "full",
+    "summary": "Four drop-off sites, or paid curbside pickup",
+    "access": "Locked bins need a free one-time registration for the code. The Resource Recovery Center carts are open during its hours.",
+    "processor": "Black Earth Compost collects and composts the scraps. Curbside pickup is a paid Black Earth subscription.",
+    "tip": "Newton needs scraps in a paper or certified compostable bag. No loose scraps, plastic, glass, metal or cartons.",
+    "source": "https://www.newtonma.gov/government/public-works/sustainable-materials-management/composting",
+    "sites": [
+      {
+        "id": "newton-1",
+        "area": "Auburndale",
+        "label": "Resource Recovery Center, 115 Rumford Ave",
+        "note": "Open when the Center is open",
+        "lat": 42.364,
+        "lng": -71.2165
+      },
+      {
+        "id": "newton-2",
+        "area": "West Newton",
+        "label": "Albemarle Road",
+        "note": "Northbound, just past the baseball diamond",
+        "lat": 42.3527,
+        "lng": -71.2105
+      },
+      {
+        "id": "newton-3",
+        "area": "Newton Centre",
+        "label": "Newton City Hall, War Memorial Circle",
+        "note": "By the bike rack",
+        "lat": 42.337,
+        "lng": -71.2085
+      },
+      {
+        "id": "newton-4",
+        "area": "Oak Hill",
+        "label": "130 Wheeler Rd",
+        "note": "Across from Oak Hill Middle School",
+        "lat": 42.3035,
+        "lng": -71.198
+      }
+    ]
+  },
+  "somerville": {
+    "id": "somerville",
+    "country": "United States",
+    "name": "Somerville",
+    "programme": "Somerville Food Waste Pilot",
+    "kind": "curb",
+    "rules": "full",
+    "summary": "Free curbside pilot in East Somerville",
+    "access": "The free pilot is for East Somerville homes in buildings of 6 units or fewer. Sign up at somervillecomposts.com. Everyone else can buy a private curbside subscription.",
+    "processor": "Garbage to Garden collects the bins. Scraps are turned into compost at local farms and composting facilities.",
+    "tip": "Put the bin out after 4 pm the night before your trash day, and line it with a paper bag or certified compostable liner.",
+    "source": "https://somervillema.gov/foodwaste",
+    "signup": "https://somervillecomposts.com",
+    "sites": []
+  },
+  "worcester": {
+    "id": "worcester",
+    "country": "United States",
+    "name": "Worcester",
+    "programme": "No city food-scrap drop-off yet",
+    "kind": "none",
+    "rules": "full",
+    "summary": "Home composting is the city-supported option",
+    "access": "The City sells home compost bins for $65 (by appointment). For food-scrap questions, contact Worcester 311.",
+    "processor": "The Residential Drop-Off Center takes leaf and yard waste, not food scraps, and gives residents free compost.",
+    "tip": "A home bin handles fruit and veg scraps, coffee grounds and eggshells. Keep meat, dairy and oils out of a backyard pile.",
+    "source": "https://www.worcesterma.gov/node/23629",
+    "sites": [
+      {
+        "id": "worcester-1",
+        "area": "South Worcester",
+        "label": "Residential Drop-Off Center, 1065 Millbury St",
+        "note": "Yard waste and free compost pickup only. No food scraps.",
+        "lat": 42.2398,
+        "lng": -71.7865
+      }
+    ]
+  },
+  "camden": {
+    "id": "camden",
+    "country": "United Kingdom",
+    "name": "London · Camden",
+    "programme": "Camden food waste recycling",
+    "kind": "curb",
+    "rules": "full",
+    "summary": "Weekly food waste collection with kitchen and outdoor caddies",
+    "access": "Houses get a green kitchen caddy and a brown outdoor caddy. Estates take tied caddy liners to a communal food bin, emptied weekly. Check your address on Camden’s property search.",
+    "processor": "Collected by Veolia for Camden Council. The council says food waste becomes low-carbon electricity or compost for fertiliser.",
+    "tip": "Line your caddy with a compostable liner, newspaper or kitchen roll. No plastic bags. Free liners at Camden libraries and leisure centres.",
+    "source": "https://www.camden.gov.uk/food",
+    "sites": []
+  },
+  "wandsworth": {
+    "id": "wandsworth",
+    "country": "United Kingdom",
+    "name": "London · Wandsworth",
+    "programme": "Wandsworth food recycling",
+    "kind": "curb",
+    "rules": "basic",
+    "summary": "Weekly food recycling for every household from 31 March 2026",
+    "access": "Houses have had weekly collection since June 2024. Flats use communal food bins, and homes without outside space are assessed one by one for on-street bins or timed collections.",
+    "processor": "Part of England’s Simpler Recycling rules, which require weekly food waste collection from households.",
+    "tip": "Use the rigid food recycling container the council provides and check Wandsworth’s guide for liners.",
+    "source": "https://wandsworth.gov.uk/rubbish-and-recycling/simpler-recycling-legislation/simpler_recycling_household_collections",
+    "sites": []
+  },
+  "nagai": {
+    "id": "nagai",
+    "country": "Japan",
+    "name": "Nagai, Yamagata",
+    "programme": "Rainbow Plan (レインボープラン)",
+    "kind": "station",
+    "rules": "basic",
+    "summary": "Kitchen waste collected twice a week at 227 neighbourhood stations",
+    "access": "Households in the urban area (about 5,000 homes) drain kitchen waste in a dedicated bucket and empty it at their collection station. Collection runs twice a week.",
+    "processor": "The city compost centre mixes about 1,500 t of kitchen waste a year with livestock manure and rice husks for 80 days, making about 500 t of compost. Farmers use it to grow Rainbow Plan–certified produce sold back to residents.",
+    "tip": "Drain liquid well before emptying your bucket. Wet waste makes poor compost.",
+    "source": "https://www.mlit.go.jp/kokudokeikaku/iten/service/kankyo/pdf/nagaisi.pdf",
+    "sites": []
+  },
+  "oki": {
+    "id": "oki",
+    "country": "Japan",
+    "name": "Ōki, Fukuoka",
+    "programme": "Ōki kitchen waste recycling",
+    "kind": "curb",
+    "rules": "basic",
+    "summary": "Kitchen waste kept out of incineration and turned into biogas",
+    "access": "Households and restaurants separate kitchen waste for collection. Check the town’s collection calendar for how and when.",
+    "processor": "The Ōki Recycling Center “Kururun” (since November 2006) ferments kitchen waste and sludge into biogas for power. The leftover liquid is used as liquid fertiliser.",
+    "tip": "Keep plastics and packaging out. Methane fermentation needs clean organic material.",
+    "source": "https://www.clair.or.jp/e/bestpractice/docs/2018oki_e_s.pdf",
+    "sites": []
+  },
+  "inagi": {
+    "id": "inagi",
+    "country": "Japan",
+    "name": "Inagi, Tokyo",
+    "programme": "Home composting subsidy",
+    "kind": "none",
+    "rules": "basic",
+    "summary": "Kitchen waste goes in burnable waste. The city pays half the cost of a home composter.",
+    "access": "Kitchen waste is about 40% of Inagi’s burnable garbage. Apply before buying: the city covers half the price, up to ¥3,000–¥10,000 depending on the type.",
+    "processor": "There’s no separate food-waste collection. Home composters and electric dryers cut what goes to the incinerator.",
+    "tip": "Outdoor composters suit houses with gardens. Electric dryers or bio-processing units suit apartments.",
+    "source": "https://www.city.inagi.tokyo.jp/en/kurashi/gomi/1005149/1005156.html",
+    "sites": []
+  },
+  "seoul": {
+    "id": "seoul",
+    "country": "South Korea",
+    "name": "Seoul",
+    "programme": "Pay-as-you-throw food waste",
+    "kind": "rfid",
+    "rules": "basic",
+    "summary": "Food waste is weighed and charged, often by RFID-tagged bins",
+    "access": "Food waste has been banned from landfill since 2005, and Seoul charges by weight since 2013. In many buildings an RFID card opens the bin, which weighs your waste and adds the fee to your monthly maintenance bill.",
+    "processor": "Districts run their own systems. Wastewater from food waste is turned into biogas at the metropolitan landfill.",
+    "tip": "Squeeze out water before disposal. About two-thirds of food waste is water, and you pay by weight.",
+    "source": "https://development.asia/explainer/using-fee-based-system-reduce-waste",
+    "sites": []
+  },
+  "toronto": {
+    "id": "toronto",
+    "country": "Canada",
+    "name": "Toronto",
+    "programme": "Green Bin",
+    "kind": "curb",
+    "rules": "full",
+    "summary": "Curbside Green Bin for food waste, pet waste and soiled paper",
+    "access": "Put your Green Bin out on your collection day. Check the City’s waste collection schedule.",
+    "processor": "Anaerobic digestion turns Green Bin material into biogas and solids. The biogas becomes renewable natural gas that heats City buildings and fuels City vehicles, and the solids become compost.",
+    "tip": "Any plastic bag works as a liner, but don’t line both the kitchen catcher and the Green Bin. “Compostable” cups and packaging go in the garbage.",
+    "source": "https://www.toronto.ca/services-payments/recycling-organics-garbage/houses/what-goes-in-my-green-bin/",
+    "sites": []
+  }
+};
+
+export type RegionId = keyof typeof REGIONS;
