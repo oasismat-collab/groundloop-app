@@ -9,7 +9,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [feature/composting-tracker]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
