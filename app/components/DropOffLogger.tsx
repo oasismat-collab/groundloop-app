@@ -3,6 +3,13 @@
 import { useState, useRef } from 'react';
 import { REGIONS, type Site } from '@/lib/regions';
 
+const LeafGlyph = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M12 21V11M12 14C4 14.5 2.5 8 3.5 3c6.5 0 11 3.5 8.5 11Zm0-3C11.5 3.6 17 1.6 21.5 2c0 6-3 10-9.5 9Z"
+      stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 interface DropOffData {
   region: string;
   site?: Site;
@@ -100,10 +107,11 @@ export default function DropOffLogger() {
     return (
       <div className="gw-page">
         <div className="gw-flow">
-          <div className="gw-head">
+          <div className="gw-hero">
             <div className="gw-eyebrow"><span /> LOG A DROP-OFF</div>
             <h1>Give your scraps <em>another purpose.</em></h1>
             <p className="gw-sub">Select your city to get started.</p>
+            <LeafGlyph className="leaf-watermark" />
           </div>
           <div className="gw-optionlist">
             {Object.values(REGIONS).map((r) => (
@@ -115,9 +123,12 @@ export default function DropOffLogger() {
                 }}
                 className="gw-option"
               >
-                <div className="title">{r.name}</div>
-                <div className="prog">{r.programme}</div>
-                <div className="desc">{r.summary}</div>
+                <span className="tile">📍</span>
+                <span className="body">
+                  <span className="title">{r.name}</span>
+                  <span className="prog">{r.programme}</span>
+                  <span className="desc">{r.summary}</span>
+                </span>
               </button>
             ))}
           </div>
@@ -132,9 +143,10 @@ export default function DropOffLogger() {
       <div className="gw-page">
         <div className="gw-flow">
           <button className="gw-back" onClick={() => setStep('region')}>← Back</button>
-          <div className="gw-head">
+          <div className="gw-hero">
             <h1>Where did you <em>drop off?</em></h1>
             <p className="gw-sub">{region.programme} · {region.name}</p>
+            <LeafGlyph className="leaf-watermark" />
           </div>
           <div className="gw-optionlist">
             {sites.map((site) => (
@@ -146,9 +158,12 @@ export default function DropOffLogger() {
                 }}
                 className="gw-option"
               >
-                <div className="title">{site.label}</div>
-                <div className="prog">{site.area}</div>
-                {site.note && <div className="desc">{site.note}</div>}
+                <span className="tile"><LeafGlyph /></span>
+                <span className="body">
+                  <span className="title">{site.label}</span>
+                  <span className="prog">{site.area}</span>
+                  {site.note && <span className="desc">{site.note}</span>}
+                </span>
               </button>
             ))}
           </div>
@@ -163,9 +178,10 @@ export default function DropOffLogger() {
       <div className="gw-page">
         <div className="gw-flow">
           <button className="gw-back" onClick={() => setStep(region.kind === 'drop' ? 'site' : 'region')}>← Back</button>
-          <div className="gw-head">
+          <div className="gw-hero">
             <h1>Add <em>proof.</em></h1>
             <p className="gw-sub">{selectedSite ? `${selectedSite.label} · ${selectedSite.area}` : region.name}</p>
+            <LeafGlyph className="leaf-watermark" />
           </div>
 
           {/* Photo upload */}
