@@ -65,6 +65,7 @@ export default function RootLayout() {
         <Stack.Screen name="log" options={{ presentation: 'modal' }} />
         <Stack.Screen name="region" options={{ presentation: 'modal' }} />
         <Stack.Screen name="recap" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="host" options={{ presentation: 'modal' }} />
       </Stack>
       {greeting && (
         <GreetingOverlay mascot={mascot} firstName={first} reduceMotion={reduceMotion} onDismiss={() => setGreeting(false)} />

@@ -122,6 +122,13 @@ export default function You() {
           )}
         </Card>
 
+        {/* Host-a-bin (Req 8.2): a business can offer a space for a drop-off bin. */}
+        <Card>
+          <Eyebrow>Help coverage grow</Eyebrow>
+          <Text style={{ color: t.muted, fontSize: 13 }}>Run a café, shop or community space? Offer it as a spot for a food-scrap bin.</Text>
+          <Button title="Offer a space" kind="secondary" onPress={() => router.push('/host')} />
+        </Card>
+
         {/* Season recap (Req 9): a shareable story of the user's impact. */}
         <Button title="See your season recap" kind="secondary" onPress={() => router.push('/recap')} />
         <Button title="Sign out" kind="secondary" onPress={() => signOut()} />
