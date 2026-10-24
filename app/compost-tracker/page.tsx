@@ -178,7 +178,7 @@ export default function CompostTracker() {
       <header className="site-header">
         <a className="brand" href={`${BASE}/`}>
           <Sprout />
-          groundwork<span className="brand-dot">.</span>
+          GroundLoop<span className="brand-dot">.</span>
         </a>
         <a className="header-link" href={`${BASE}/#soil-story`}>
           Track your composting impact <span>↗</span>
@@ -327,7 +327,7 @@ export default function CompostTracker() {
       <footer>
         <a className="brand" href={`${BASE}/`}>
           <Sprout />
-          groundwork.
+          GroundLoop.
         </a>
         <p>Food is best eaten. Composting gives unavoidable scraps another purpose.</p>
         <span>Small steps. Honest science.</span>

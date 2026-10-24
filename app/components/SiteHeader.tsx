@@ -14,13 +14,13 @@ function Sprout() {
   );
 }
 
-/** Shared site header used across the Groundwork pages. */
+/** Shared site header used across the GroundLoop pages. */
 export default function SiteHeader() {
   return (
     <header className="site-header">
       <a className="brand" href={`${BASE}/`}>
         <Sprout />
-        groundwork<span className="brand-dot">.</span>
+        GroundLoop<span className="brand-dot">.</span>
       </a>
       <div style={{ display: 'flex', gap: '1rem' }}>
         <a className="header-link" href={`${BASE}/#demo`}>Live Demo <span>↗</span></a>

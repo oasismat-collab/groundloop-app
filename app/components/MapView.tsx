@@ -6,7 +6,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { REGIONS, type Site } from '@/lib/regions';
 
-// Branded teardrop marker (Groundwork green + leaf) as a Leaflet divIcon,
+// Branded teardrop marker (GroundLoop green + leaf) as a Leaflet divIcon,
 // replacing the generic blue default pin.
 function leafMarker(active = false): L.DivIcon {
   const fill = active ? '#1f5c3f' : '#2f7a55';
