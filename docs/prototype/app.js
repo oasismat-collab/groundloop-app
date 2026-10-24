@@ -432,9 +432,14 @@ function renderPartner() {
   const maxTrend = Math.max(...sampleTrend);
   const spark = sampleTrend.map((n) => `<i style="height:${(n / maxTrend * 100).toFixed(0)}%" title="${n}"></i>`).join('');
 
+  // Explain suppression. When the suppressed areas together still clear the
+  // minimum they are merged into "Other areas"; when even their combined total is
+  // below the minimum we hide them entirely (no small cell, even under a label).
   const suppressedNote = (suppressed.length)
     ? `<div class="note"><span class="ic">🔒</span><span>${t('partner.minnote')}
-         <br><span class="muted">${suppressed.length} area${suppressed.length > 1 ? 's' : ''} merged into “Other areas” (${merged.users} residents).</span></span></div>`
+         <br><span class="muted">${suppressed.length} area${suppressed.length > 1 ? 's' : ''} ${merged
+           ? `merged into “Other areas” (${merged.users} residents).`
+           : `hidden — too few opted-in residents to show, even combined.`}</span></span></div>`
     : '';
 
   v.innerHTML = `
@@ -457,9 +462,9 @@ function renderPartner() {
       </div>
       <div>
         <div class="card"><h3>${t('partner.persite')}</h3>${bars}
-          <div class="bar" style="opacity:.6"><span class="lbl">Other areas</span>
-            <span class="track"><span class="fill" style="width:${merged ? (merged.dropoffs / maxDrops * 100).toFixed(0) : 0}%;background:var(--muted)"></span></span>
-            <span class="val">${merged ? merged.dropoffs : 0}</span></div>
+          ${merged ? `<div class="bar" style="opacity:.6"><span class="lbl">Other areas</span>
+            <span class="track"><span class="fill" style="width:${(merged.dropoffs / maxDrops * 100).toFixed(0)}%;background:var(--muted)"></span></span>
+            <span class="val">${merged.dropoffs}</span></div>` : ''}
           ${suppressedNote}
         </div>
         <div class="card"><h3>${t('partner.underserved')}</h3>${rank}</div>

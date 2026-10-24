@@ -8,10 +8,12 @@
 export const MIN_USERS = 10;
 
 /**
- * Split area stats into { shown, suppressed } by the minimum-users threshold.
- * `records` are { area, city, users, dropoffs, ... }. Suppressed areas are
- * merged into a single "Other areas" bucket for the parent city so their total
- * still contributes, but no small cell is individually visible.
+ * Split area stats into { shown, suppressed, merged } by the minimum-users
+ * threshold. `records` are { area, city, users, dropoffs, ... }. Suppressed areas
+ * are merged into a single "Other areas" bucket so their total still contributes —
+ * but ONLY when that bucket itself reaches `minUsers`. If the combined bucket is
+ * still below the threshold, `merged` is null and those areas are hidden outright,
+ * so no small cell is ever visible, not even relabelled as "Other areas".
  */
 export function aggregateByArea(records, { minUsers = MIN_USERS } = {}) {
   const shown = [];
@@ -22,11 +24,19 @@ export function aggregateByArea(records, { minUsers = MIN_USERS } = {}) {
   }
   shown.sort((a, b) => b.dropoffs - a.dropoffs);
 
+  // Merge suppressed areas into a single "Other areas" bucket so their total still
+  // contributes. But that bucket is itself a cell a partner sees, so it must also
+  // clear the threshold: a lone small area (or a handful summing to < minUsers)
+  // merged under a new label would still expose a small cell. When the combined
+  // bucket does not reach minUsers we drop it entirely — privacy.md: "when in
+  // doubt, aggregate harder and suppress smaller cells — never the reverse."
   let merged = null;
   if (suppressedRecords.length) {
     const users = suppressedRecords.reduce((s, r) => s + r.users, 0);
     const dropoffs = suppressedRecords.reduce((s, r) => s + r.dropoffs, 0);
-    merged = { area: 'Other areas', users, dropoffs, count: suppressedRecords.length, merged: true };
+    if (users >= minUsers) {
+      merged = { area: 'Other areas', users, dropoffs, count: suppressedRecords.length, merged: true };
+    }
   }
   return { shown, suppressed: suppressedRecords, merged };
 }
