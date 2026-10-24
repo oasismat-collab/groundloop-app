@@ -18,9 +18,15 @@
       <div class="brand" data-i18n="app.name">GroundLoop</div>
       <div class="tagline" data-i18n="app.tagline">Follow your food scraps back to the soil.</div>
     </div>
-    <div class="switch" id="viewSwitch">
-      <button data-view="resident" class="active" data-i18n="nav.resident">Resident app</button>
-      <button data-view="partner" data-i18n="nav.partner">Partner dashboard</button>
+    <div class="topbar-controls">
+      <label class="langtoggle">
+        <span class="globe" aria-hidden="true">🌐</span>
+        <select id="topLang" aria-label="Language"></select>
+      </label>
+      <div class="switch" id="viewSwitch">
+        <button data-view="resident" class="active" data-i18n="nav.resident">Resident app</button>
+        <button data-view="partner" data-i18n="nav.partner">Partner dashboard</button>
+      </div>
     </div>
   </header>
 

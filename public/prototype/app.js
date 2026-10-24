@@ -66,6 +66,17 @@ function applyStaticI18n() {
   document.querySelectorAll('[data-i18n]').forEach((n) => { n.textContent = t(n.getAttribute('data-i18n')); });
 }
 
+/* Global language toggle in the top bar (available on every view). */
+function renderTopLang() {
+  const sel = el('topLang');
+  if (!sel) return;
+  if (!sel.options.length) {
+    sel.innerHTML = LOCALES.map((l) => `<option value="${l.code}">${esc(l.label)}</option>`).join('');
+    sel.onchange = (e) => { state.locale = e.target.value; setLocale(state.locale); render(); };
+  }
+  sel.value = state.locale;
+}
+
 /* ───────────────────────── root render ───────────────────────── */
 
 function render() {
@@ -74,6 +85,7 @@ function render() {
   document.querySelectorAll('#viewSwitch button').forEach((b) =>
     b.classList.toggle('active', b.dataset.view === state.view));
   applyStaticI18n();
+  renderTopLang();
   if (state.view === 'resident') renderResident();
   else renderPartner();
 }
