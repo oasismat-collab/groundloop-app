@@ -41,7 +41,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
 
 - [ ] 8. Log flow (`app/log.tsx`) – started
   - [x] 8.1 Site picker, camera capture, one-shot location, careful checkbox, submit – _Req 4.1–4.3_
-  - [ ] 8.2 Listen for the verified result and show seeds, proof level, badges and revived Peel – _Req 4.7, 6.2_
+  - [x] 8.2 Listen for the verified result and show seeds, proof level, badges and revived Peel – _Req 4.7, 6.2_
   - [x] 8.3 Offline: show "Saved. We'll verify it when you're back online." – _Design_
 
 - [x] 9. Map tab
