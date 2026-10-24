@@ -39,7 +39,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
   - [x] 7.1 Greeting, streak card with `WeekStrip`, Peel, log button – _Req 5.6, 6.1_
   - [x] 7.2 Travel notice, freeze-used notice, usual site card, community preview – _Req 3.2, 5.5_
 
-- [ ] 8. Log flow (`app/log.tsx`) – started
+- [x] 8. Log flow (`app/log.tsx`)
   - [x] 8.1 Site picker, camera capture, one-shot location, careful checkbox, submit – _Req 4.1–4.3_
   - [x] 8.2 Listen for the verified result and show seeds, proof level, badges and revived Peel – _Req 4.7, 6.2_
   - [x] 8.3 Offline: show "Saved. We'll verify it when you're back online." – _Design_
@@ -49,7 +49,7 @@ Items marked [x] are already scaffolded in this repository. Kiro: start at the f
   - [x] 9.2 Long-press to suggest a bin → `siteRequests` – _Req 8.1_
 
 - [x] 10. Check tab – verdict UI over `verdict.ts` – _Req 3.3, 3.4_
-- [ ] 11. Community tab – started (composer, feed, city filter, cheers done)
+- [x] 11. Community tab (composer, feed, city filter, cheers done)
   - [x] 11.1 Consistency board from `members`, ordered by streak then proofShare – _Req 7.4_
   - [x] 11.2 Attach latest proof photo; report and hide – _Req 7.1, 7.6_
 - [x] 12. You tab (cities, travel mode, freezes, 16-week strip, sign out done)
