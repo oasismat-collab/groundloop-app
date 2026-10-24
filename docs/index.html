@@ -146,6 +146,27 @@
     .qrbox svg { width: 180px; height: 180px; display: block; }
     .qrbox a { font-weight: 700; word-break: break-all; }
 
+    /* ── live demo (embedded, scroll target) ── */
+    .demo { background: var(--forestSoft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .demo .wrap { text-align: center; }
+    .demo .lead { margin-left: auto; margin-right: auto; }
+    .demoframe {
+      position: relative; margin: 8px auto 0; max-width: 1180px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(16,33,26,.16); overflow: hidden; text-align: left;
+    }
+    .demoframe .bar {
+      display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+      background: var(--soft); border-bottom: 1px solid var(--line); color: var(--muted); font-size: 13px;
+    }
+    .demoframe .bar .dot { width: 11px; height: 11px; border-radius: 50%; background: #cdd6cd; }
+    .demoframe .bar .dot:nth-child(1) { background: #e0776b; }
+    .demoframe .bar .dot:nth-child(2) { background: #e6c15a; }
+    .demoframe .bar .dot:nth-child(3) { background: #7fb98f; }
+    .demoframe .bar .url { margin-left: 10px; }
+    .demoframe iframe { display: block; width: 100%; height: 900px; max-height: 86vh; border: 0; background: var(--bg); }
+    .demo .cta { justify-content: center; margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+
     /* ── footer ── */
     footer { background: #10211a; color: #CDE5D6; padding: 40px 20px; }
     footer .wrap { display: grid; gap: 14px; }
@@ -174,7 +195,7 @@
     <div class="brand"><span id="brandMark"></span><span>GroundLoop</span></div>
     <div class="nav">
       <select id="langSel" aria-label="Language"></select>
-      <a class="barlink" href="prototype/" data-i18n="nav.try">Try the app</a>
+      <a class="barlink" href="#demo" id="toDemoBar" data-i18n="nav.try">Try the app</a>
     </div>
   </header>
 
@@ -187,7 +208,7 @@
           <h1 data-i18n="hero.title">Follow your food scraps back to the soil.</h1>
           <p class="sub" data-i18n="hero.sub">Sort it, drop it, and keep a weekly streak that follows you anywhere. GroundLoop makes composting easy to join — and gives cities the anonymized picture they need to add drop-off sites where they help most.</p>
           <div class="cta">
-            <a class="btn" href="prototype/" data-i18n="hero.cta.try">Try the app</a>
+            <a class="btn" href="#demo" id="toDemo" data-i18n="hero.cta.try">Try the app</a>
             <a class="btn secondary" href="#partners" id="toPartners" data-i18n="hero.cta.partners">For cities &amp; companies</a>
           </div>
           <p class="trust muted" data-i18n="hero.trust">No login. No install. Runs right in your browser.</p>
@@ -208,6 +229,26 @@
               <div class="fakebtn" data-i18n="phone.log">📸 Log a drop-off</div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1b. Live demo (embedded — scroll down from the hero and it's right here) -->
+    <section class="demo" id="demo">
+      <div class="wrap">
+        <p class="eyebrow" data-i18n="demo.eyebrow">See it for yourself</p>
+        <h2 data-i18n="demo.title">The live app — right here.</h2>
+        <p class="lead" data-i18n="demo.lead">No login, no install, no server. Use the resident app below, or switch to the partner dashboard — it's the real thing running in sample mode.</p>
+        <div class="demoframe">
+          <div class="bar" aria-hidden="true">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="url">groundloop · live demo (sample mode)</span>
+          </div>
+          <iframe id="demoFrame" src="prototype/" title="GroundLoop interactive browser demo" loading="lazy" allow="geolocation"></iframe>
+        </div>
+        <div class="cta">
+          <a class="btn" href="prototype/" target="_blank" rel="noopener" data-i18n="demo.full">Open full screen ↗</a>
+          <a class="btn secondary" href="prototype/#partner" target="_blank" rel="noopener" data-i18n="demo.partner">Open the partner dashboard ↗</a>
         </div>
       </div>
     </section>
@@ -375,6 +416,9 @@
         'hero.sub':"Sort it, drop it, and keep a weekly streak that follows you anywhere. GroundLoop makes composting easy to join — and gives cities the anonymized picture they need to add drop-off sites where they help most.",
         'hero.cta.try':'Try the app', 'hero.cta.partners':'For cities & companies',
         'hero.trust':'No login. No install. Runs right in your browser.',
+        'demo.eyebrow':'See it for yourself', 'demo.title':'The live app — right here.',
+        'demo.lead':"No login, no install, no server. Use the resident app below, or switch to the partner dashboard — it's the real thing running in sample mode.",
+        'demo.full':'Open full screen ↗', 'demo.partner':'Open the partner dashboard ↗',
         'phone.peel':'Peel is fresh. Nice work this week!', 'phone.streak':'Weekly streak', 'phone.log':'📸 Log a drop-off',
         'problem.eyebrow':'The problem', 'problem.title':'Good scraps keep ending up in the wrong place.',
         'problem.lead':"Food is the heaviest thing most of us throw away — and it doesn't have to be waste at all.",
@@ -418,6 +462,9 @@
         'hero.title':'Sigue tus restos de comida de vuelta a la tierra.',
         'hero.cta.try':'Prueba la app', 'hero.cta.partners':'Para ciudades y empresas',
         'hero.trust':'Sin cuenta. Sin instalar. Funciona en tu navegador.',
+        'demo.eyebrow':'Compruébalo tú mismo', 'demo.title':'La app en vivo — aquí mismo.',
+        'demo.lead':'Sin cuenta, sin instalar, sin servidor. Usa la app de residentes abajo o cambia al panel de socios — es lo real en modo de muestra.',
+        'demo.full':'Abrir en pantalla completa ↗', 'demo.partner':'Abrir el panel de socios ↗',
         'phone.streak':'Racha semanal', 'phone.log':'📸 Registrar un depósito',
         'problem.eyebrow':'El problema', 'problem.title':'Buenos restos siguen acabando en el lugar equivocado.',
         'how.eyebrow':'Para residentes', 'how.title':'Cómo funciona',
@@ -437,6 +484,9 @@
         'nav.try':'Experimente o app', 'hero.eyebrow':'Grátis para sempre para moradores',
         'hero.title':'Siga seus restos de comida de volta ao solo.',
         'hero.cta.try':'Experimente o app', 'hero.cta.partners':'Para cidades e empresas',
+        'demo.eyebrow':'Veja você mesmo', 'demo.title':'O app ao vivo — aqui mesmo.',
+        'demo.lead':'Sem login, sem instalação, sem servidor. Use o app de moradores abaixo ou mude para o painel de parceiros — é o app real em modo de amostra.',
+        'demo.full':'Abrir em tela cheia ↗', 'demo.partner':'Abrir o painel de parceiros ↗',
         'phone.streak':'Sequência semanal', 'phone.log':'📸 Registrar um depósito',
         'problem.eyebrow':'O problema', 'how.eyebrow':'Para moradores', 'how.title':'Como funciona',
         'how.peel.t':'Conheça a Peel, a banana.',
@@ -451,6 +501,9 @@
         'nav.try':'Eseye app la', 'hero.eyebrow':'Gratis pou toutan pou rezidan',
         'hero.title':'Swiv rès manje ou yo tounen nan tè a.',
         'hero.cta.try':'Eseye app la', 'hero.cta.partners':'Pou vil ak konpayi',
+        'demo.eyebrow':'Gade li ou menm', 'demo.title':'App la an dirèk — la menm.',
+        'demo.lead':'San login, san enstalasyon, san sèvè. Sèvi ak app rezidan an anba a, oswa chanje pou tablo patnè a — se bagay reyèl la nan mòd egzanp.',
+        'demo.full':'Ouvri an plen ekran ↗', 'demo.partner':'Ouvri tablo patnè a ↗',
         'phone.streak':'Seri chak semèn', 'how.eyebrow':'Pou rezidan', 'how.title':'Kijan li mache',
         'how.peel.t':'Men Peel bannann lan.',
         'every.eyebrow':'Pou tout moun', 'every.free.n':'Gratis', 'every.cities.n':'13 vil',
@@ -464,6 +517,9 @@
         'nav.try':'试用应用', 'hero.eyebrow':'居民永久免费',
         'hero.title':'让你的厨余回到土壤。',
         'hero.cta.try':'试用应用', 'hero.cta.partners':'面向城市与企业',
+        'demo.eyebrow':'亲自体验', 'demo.title':'实时应用 — 就在这里。',
+        'demo.lead':'无需登录、无需安装、无需服务器。在下方使用居民应用，或切换到合作方面板 — 这是示例模式下运行的真实应用。',
+        'demo.full':'全屏打开 ↗', 'demo.partner':'打开合作方面板 ↗',
         'phone.streak':'每周连续记录', 'how.eyebrow':'面向居民', 'how.title':'如何运作',
         'how.peel.t':'认识香蕉 Peel。',
         'every.eyebrow':'为每个人打造', 'every.free.n':'免费', 'every.cities.n':'13 座城市',
@@ -477,6 +533,9 @@
         'nav.try':'Dùng thử ứng dụng', 'hero.eyebrow':'Miễn phí mãi mãi cho cư dân',
         'hero.title':'Theo dấu rác thực phẩm của bạn trở về với đất.',
         'hero.cta.try':'Dùng thử ứng dụng', 'hero.cta.partners':'Cho thành phố & doanh nghiệp',
+        'demo.eyebrow':'Tự mình trải nghiệm', 'demo.title':'Ứng dụng trực tiếp — ngay tại đây.',
+        'demo.lead':'Không đăng nhập, không cài đặt, không máy chủ. Dùng ứng dụng cư dân bên dưới, hoặc chuyển sang bảng đối tác — đây là ứng dụng thật chạy ở chế độ mẫu.',
+        'demo.full':'Mở toàn màn hình ↗', 'demo.partner':'Mở bảng đối tác ↗',
         'phone.streak':'Chuỗi hàng tuần', 'how.eyebrow':'Cho cư dân', 'how.title':'Cách hoạt động',
         'how.peel.t':'Gặp Peel quả chuối.',
         'every.eyebrow':'Dành cho mọi người', 'every.free.n':'Miễn phí', 'every.cities.n':'13 thành phố',
@@ -534,13 +593,12 @@
     langSel.value = current;
     langSel.addEventListener('change', (e)=>{ setLocale(e.target.value); applyI18n(); });
 
-    // smooth-scroll for the hero secondary button (reduced-motion aware; href anchor is the fallback)
+    // smooth-scroll for in-page nav buttons (reduced-motion aware; href anchor is the fallback)
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    document.getElementById('toPartners').addEventListener('click', (e)=>{
-      const target = document.getElementById('partners');
-      if (!target) return;
-      e.preventDefault();
-      target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    function scrollTo(id){ const target = document.getElementById(id); if (!target) return false; target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); return true; }
+    [['toPartners','partners'],['toDemo','demo'],['toDemoBar','demo']].forEach(([btn,sec])=>{
+      const el = document.getElementById(btn);
+      if (el) el.addEventListener('click', (e)=>{ if (scrollTo(sec)) e.preventDefault(); });
     });
 
     applyI18n();
